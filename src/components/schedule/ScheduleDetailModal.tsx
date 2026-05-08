@@ -1,10 +1,11 @@
 "use client";
 import { useState, useMemo } from "react";
-import { X, Edit, Trash2, Check, XIcon } from "lucide-react";
+import { X, Edit, Trash2, Check, XIcon, Bell, MessageCircleWarning } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, differenceInDays } from "date-fns";
 import { useAppStore } from "@/lib/store";
 import { deleteSchedule as deleteScheduleRemote } from "@/lib/supabase/schedules";
+import { sendScheduleLineReminders } from "@/lib/supabase/schedules";
 import type { Schedule } from "@/types";
 import { toast } from "react-hot-toast";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
@@ -25,6 +26,7 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [quickPayStudent, setQuickPayStudent] = useState<{ scheduleId: string; studentId: string } | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | "paid" | "unpaid">(initialStatusFilter || "all");
+  const [sendingReminder, setSendingReminder] = useState<"all" | string | null>(null);
 
   // Get students for this schedule
   const scheduleStudents = data.students
@@ -71,6 +73,10 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
   const unpaidCount = totalStudents - paidCount;
   const totalCollected = scheduleTransactions.reduce((sum, t) => sum + t.amount, 0);
   const targetAmount = schedule.amountPerItem * totalStudents;
+  const totalRemaining = Math.max(0, targetAmount - totalCollected);
+  const unpaidStudents = scheduleStudents.filter((student) => !paidStudentIds.has(student.id));
+  const unpaidStudentsWithLine = unpaidStudents.filter((student) => Boolean(student.lineUserId));
+  const missingLineCount = unpaidStudents.length - unpaidStudentsWithLine.length;
   const daysLeft = schedule.endDate
     ? differenceInDays(new Date(schedule.endDate), new Date())
     : null;
@@ -86,6 +92,31 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
       toast.error("เกิดข้อผิดพลาด");
     } finally {
       setDeleteConfirm(null);
+    }
+  };
+
+  const handleSendReminder = async (studentIds?: string[]) => {
+    const mode = studentIds?.length === 1 ? studentIds[0] : "all";
+    setSendingReminder(mode);
+    try {
+      const result = await sendScheduleLineReminders(schedule.id, studentIds);
+      if (result.sent > 0) {
+        toast.success(`ส่ง LINE แล้ว ${result.sent} คน${result.skippedMissingLineId ? ` • ไม่มี LINE ID ${result.skippedMissingLineId} คน` : ""}`);
+      } else if (result.skippedMissingLineId > 0) {
+        toast.error("ยังส่งไม่ได้: นักเรียนที่ค้างชำระยังไม่มี LINE User ID");
+      } else if (result.alreadyPaid > 0) {
+        toast.success("รายการนี้ชำระครบแล้ว");
+      } else {
+        toast.error("ส่งแจ้งเตือนไม่สำเร็จ");
+      }
+
+      if (result.failed > 0) {
+        toast.error(`ส่งไม่สำเร็จ ${result.failed} คน ตรวจสอบ LINE User ID หรือ Channel token`);
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "ส่งแจ้งเตือนไม่สำเร็จ");
+    } finally {
+      setSendingReminder(null);
     }
   };
 
@@ -149,6 +180,15 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                   {/* Action buttons */}
                   <div className="flex items-center gap-2">
                     <button
+                      onClick={() => handleSendReminder(unpaidStudentsWithLine.map((student) => student.id))}
+                      disabled={unpaidStudentsWithLine.length === 0 || sendingReminder !== null}
+                      className="apple-icon-button h-9 w-9 rounded-xl disabled:opacity-45"
+                      aria-label="ส่งแจ้งเตือน LINE"
+                      title={unpaidStudentsWithLine.length === 0 ? "ยังไม่มีนักเรียนค้างชำระที่มี LINE User ID" : `ส่งแจ้งเตือน ${unpaidStudentsWithLine.length} คน`}
+                    >
+                      <Bell className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </button>
+                    <button
                       onClick={() => setIsEditModalOpen(true)}
                       className="apple-icon-button h-9 w-9 rounded-xl"
                       aria-label="แก้ไข"
@@ -200,15 +240,33 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
 
                   <div className="apple-soft rounded-xl p-4">
                     <div className="text-sm text-zinc-600 dark:text-zinc-400">
-                      เป้าหมาย
+                      ยอดค้าง
                     </div>
                     <div className="mt-1 text-2xl font-bold">
-                      {targetAmount.toLocaleString()} ฿
+                      {totalRemaining.toLocaleString()} ฿
                     </div>
                     <div className="mt-1 text-xs text-zinc-500">
                       {unpaidCount} คนค้าง
                     </div>
                   </div>
+                </div>
+                <div className="mt-3 flex flex-col gap-2 rounded-2xl border p-3 text-sm sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "var(--line)", background: "var(--panel-soft)" }}>
+                  <div className="min-w-0">
+                    <div className="font-semibold">แจ้งเตือนผ่าน LINE</div>
+                    <div className="text-xs text-muted">
+                      พร้อมส่ง {unpaidStudentsWithLine.length} คน
+                      {missingLineCount > 0 ? ` • ไม่มี LINE User ID ${missingLineCount} คน` : ""}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleSendReminder(unpaidStudentsWithLine.map((student) => student.id))}
+                    disabled={unpaidStudentsWithLine.length === 0 || sendingReminder !== null}
+                    className="apple-button justify-center px-3 py-2 text-sm disabled:opacity-45"
+                  >
+                    <Bell className="h-4 w-4" />
+                    {sendingReminder === "all" ? "กำลังส่ง..." : "ส่งแจ้งเตือน"}
+                  </button>
                 </div>
               </div>
 
@@ -285,7 +343,7 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                               </div>
                             </div>
                           </div>
-                          <div className="text-right">
+                          <div className="flex items-center gap-2 text-right">
                             {hasPaid ? (
                               <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">ชำระแล้ว</div>
                             ) : totalPaid > 0 ? (
@@ -295,6 +353,27 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                               </div>
                             ) : (
                               <div className="text-sm font-medium text-rose-600 dark:text-rose-400">คลิกเพื่อชำระ</div>
+                            )}
+                            {!hasPaid && (
+                              student.lineUserId ? (
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleSendReminder([student.id]);
+                                  }}
+                                  disabled={sendingReminder !== null}
+                                  className="apple-icon-button h-8 w-8 rounded-xl disabled:opacity-45"
+                                  aria-label={`ส่ง LINE ถึง ${student.firstName}`}
+                                  title="ส่งแจ้งเตือน LINE"
+                                >
+                                  <Bell className="h-4 w-4 text-blue-600" />
+                                </button>
+                              ) : (
+                                <span title="ยังไม่มี LINE User ID">
+                                  <MessageCircleWarning className="h-5 w-5 text-amber-500" />
+                                </span>
+                              )
                             )}
                           </div>
                         </motion.div>

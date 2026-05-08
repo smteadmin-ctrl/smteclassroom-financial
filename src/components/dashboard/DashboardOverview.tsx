@@ -191,27 +191,27 @@ export function DashboardOverview() {
   const hasTransactions = data.transactions.length > 0;
 
   return (
-    <div className="space-y-5 md:space-y-6">
-      <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.35fr)_400px]">
-        <div className="min-w-0 space-y-5 md:space-y-6">
-          <div className="apple-card overflow-hidden p-4 sm:p-5 md:p-7 xl:p-8">
-            <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div className="space-y-3 sm:space-y-5 md:space-y-6">
+      <div className="grid gap-4 2xl:grid-cols-[minmax(0,1.35fr)_400px]">
+        <div className="min-w-0 space-y-3 sm:space-y-5 md:space-y-6">
+          <div className="apple-card overflow-hidden p-3 sm:p-5 md:p-7 xl:p-8">
+            <div className="mb-3 flex flex-col gap-3 sm:mb-5 lg:flex-row lg:items-start lg:justify-between">
               <div className="min-w-0">
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold" style={{ background: "var(--primary-soft)", color: "var(--primary)" }}>
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[11px] font-semibold sm:px-3 sm:text-xs" style={{ background: "var(--primary-soft)", color: "var(--primary)" }}>
                   <Sparkles className="h-3.5 w-3.5" />
-                  Live classroom finance
+                  การเงินห้องเรียนแบบเรียลไทม์
                 </div>
-                <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Financial pulse</h2>
-                <p className="mt-1 text-sm text-muted">Income, expenses, collection progress, and pockets in one calm workspace.</p>
+                <h2 className="text-xl font-bold tracking-tight sm:text-2xl md:text-3xl">ภาพรวมการเงิน</h2>
+                <p className="mt-1 text-xs text-muted sm:text-sm">รายรับ รายจ่าย ความคืบหน้าการเก็บเงิน และกระเป๋าเงินในที่เดียว</p>
               </div>
-              <div className="flex h-11 min-w-0 items-center gap-3 rounded-2xl border px-3 text-sm text-muted sm:h-12 sm:px-4 lg:w-80" style={{ borderColor: "var(--line)", background: "var(--panel-soft)" }}>
+              <div className="flex h-10 min-w-0 items-center gap-3 rounded-2xl border px-3 text-sm text-muted sm:h-12 sm:px-4 lg:w-80" style={{ borderColor: "var(--line)", background: "var(--panel-soft)" }}>
                 <Search className="h-4 w-4" />
-                <span className="flex-1 truncate">Search Dashboard</span>
+                <span className="flex-1 truncate">ค้นหาในภาพรวม</span>
                 <SlidersHorizontal className="h-4 w-4" />
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 xl:grid-cols-4">
               <StatCard title="ยอดรวมคงเหลือ" value={balance.balance.toLocaleString()} subtitle="รวมรายรับ-รายจ่าย" tone="primary" href="/transactions" icon={CircleDollarSign} />
               <StatCard title="รายรับ" value={balance.incomeTxn.toLocaleString()} subtitle="ธุรกรรมทั่วไป" tone="success" href="/transactions?source=transaction&kind=income" icon={ArrowUpRight} />
               <StatCard title="รายจ่าย" value={balance.expenseTxn.toLocaleString()} subtitle="ทั้งหมด" tone="danger" href="/transactions?kind=expense" icon={ArrowDownLeft} />
@@ -222,7 +222,7 @@ export function DashboardOverview() {
           <PocketList />
         </div>
 
-        <div className="visual-gradient relative min-h-[260px] overflow-hidden rounded-[26px] p-5 text-white shadow-2xl sm:min-h-[300px] sm:p-6 2xl:min-h-full">
+        <div className="visual-gradient relative hidden min-h-[260px] overflow-hidden rounded-[26px] p-5 text-white shadow-2xl sm:min-h-[300px] sm:p-6 2xl:block 2xl:min-h-full">
           <div
             className="absolute inset-0 opacity-70"
             style={{
@@ -233,21 +233,21 @@ export function DashboardOverview() {
           />
           <div className="relative z-10 flex h-full flex-col justify-between gap-8">
             <div>
-              <p className="text-sm font-semibold text-white/70">Current balance</p>
+              <p className="text-sm font-semibold text-white/70">ยอดคงเหลือปัจจุบัน</p>
               <div className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">{money(balance.balance)} ฿</div>
             </div>
             <div className="rounded-[24px] border border-white/20 bg-white/14 p-5 shadow-2xl backdrop-blur-2xl">
               <div className="mb-4 flex items-center justify-between text-sm text-white/75">
-                <span>This month</span>
+                <span>เดือนนี้</span>
                 <span>{month}</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <div className="text-xs text-white/60">Income</div>
+                  <div className="text-xs text-white/60">รายรับ</div>
                   <div className="text-xl font-bold">+{money(analytics.totalIncome)}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60">Expense</div>
+                  <div className="text-xs text-white/60">รายจ่าย</div>
                   <div className="text-xl font-bold">-{money(analytics.totalExpense)}</div>
                 </div>
               </div>
@@ -265,7 +265,7 @@ export function DashboardOverview() {
       </div>
 
       {/* Student payment counts by schedule */}
-      <div className="apple-card p-4 sm:p-5">
+      <div className="apple-card p-3 sm:p-5">
         <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <h2 className="text-lg font-medium">สถานะการชำระ</h2>
@@ -287,15 +287,15 @@ export function DashboardOverview() {
           ) : null}
         </div>
         {hasSchedules ? (
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Link href={`/schedule?scheduleId=${effectiveScheduleId}&status=paid`} className="apple-soft hover-lift rounded-[22px] p-5 hover:shadow-md">
-              <div className="text-sm text-zinc-600 dark:text-zinc-400">ชำระแล้ว</div>
-              <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{paymentStatus.paid}</div>
+          <div className="grid grid-cols-2 gap-2 sm:gap-4">
+            <Link href={`/schedule?scheduleId=${effectiveScheduleId}&status=paid`} className="apple-soft hover-lift rounded-[18px] p-3 hover:shadow-md sm:rounded-[22px] sm:p-5">
+              <div className="text-xs text-zinc-600 sm:text-sm dark:text-zinc-400">ชำระแล้ว</div>
+              <div className="text-2xl font-bold text-emerald-600 sm:text-3xl dark:text-emerald-400">{paymentStatus.paid}</div>
               <div className="text-xs text-zinc-500">คน</div>
             </Link>
-            <Link href={`/schedule?scheduleId=${effectiveScheduleId}&status=unpaid`} className="apple-soft hover-lift rounded-[22px] p-5 hover:shadow-md">
-              <div className="text-sm text-zinc-600 dark:text-zinc-400">ค้างชำระ</div>
-              <div className="text-3xl font-bold text-rose-600 dark:text-rose-400">{paymentStatus.unpaid}</div>
+            <Link href={`/schedule?scheduleId=${effectiveScheduleId}&status=unpaid`} className="apple-soft hover-lift rounded-[18px] p-3 hover:shadow-md sm:rounded-[22px] sm:p-5">
+              <div className="text-xs text-zinc-600 sm:text-sm dark:text-zinc-400">ค้างชำระ</div>
+              <div className="text-2xl font-bold text-rose-600 sm:text-3xl dark:text-rose-400">{paymentStatus.unpaid}</div>
               <div className="text-xs text-zinc-500">คน</div>
             </Link>
           </div>
@@ -307,23 +307,23 @@ export function DashboardOverview() {
       </div>
 
       {/* Dashboard Analytics */}
-      <div className="apple-card p-4 sm:p-5 md:p-6">
+      <div className="apple-card p-3 sm:p-5 md:p-6">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
-            <h2 className="text-lg font-medium">ภาพรวมการเงินรายเดือน</h2>
+          <div className="flex min-w-0 items-center gap-2">
+            <h2 className="text-base font-semibold sm:text-lg">ภาพรวมการเงินรายเดือน</h2>
             <Link href="/transactions" className="text-xs text-blue-600 hover:underline">ดูทั้งหมด →</Link>
           </div>
           <input
             type="month"
             value={month}
             onChange={(e) => setMonth(e.target.value)}
-            className="w-full rounded-full border px-3 py-2 text-sm sm:w-auto"
+            className="h-10 w-full rounded-full border px-3 py-2 text-sm sm:w-auto"
             aria-label="เลือกเดือน"
           />
         </div>
         {hasTransactions && analytics.hasMonthTransactions ? (
-          <div className="space-y-5">
-            <div className="grid gap-3 sm:grid-cols-3">
+          <div className="space-y-3 sm:space-y-5">
+            <div className="grid gap-2 sm:grid-cols-3 sm:gap-3">
               <MiniSummaryCard
                 href="/transactions?kind=income"
                 label="รายรับเดือนนี้"
@@ -345,7 +345,7 @@ export function DashboardOverview() {
               />
             </div>
 
-            <div className="apple-soft h-64 rounded-[24px] p-2 sm:h-72 sm:p-3 md:h-80">
+            <div className="apple-soft h-48 rounded-[20px] p-2 sm:h-72 sm:rounded-[24px] sm:p-3 md:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={analytics.daily} margin={{ top: 12, right: 12, bottom: 0, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--line-strong)" vertical={false} />
@@ -369,7 +369,7 @@ export function DashboardOverview() {
                     labelFormatter={(label) => `วันที่ ${label}`}
                   />
                   <Bar dataKey="income" fill="var(--cyan)" radius={[8, 8, 0, 0]} name="รายรับ" />
-                  <Bar dataKey="expense" fill="var(--pink)" radius={[8, 8, 0, 0]} name="รายจ่าย" />
+                  <Bar dataKey="expense" fill="var(--danger)" radius={[8, 8, 0, 0]} name="รายจ่าย" />
                   <Line
                     type="monotone"
                     dataKey="net"
@@ -489,8 +489,12 @@ function MiniSummaryCard({
   const prefix = signed && value > 0 ? "+" : "";
 
   return (
-    <Link href={href} className="block min-w-0 rounded-2xl border bg-zinc-50/50 p-3 transition-colors hover:border-zinc-400 dark:bg-zinc-900/40 dark:hover:border-zinc-600">
-      <div className="text-sm text-zinc-500">{label}</div>
+    <Link
+      href={href}
+      className="block min-w-0 rounded-[18px] border p-2.5 shadow-sm transition-colors hover:shadow-md sm:rounded-2xl sm:p-3"
+      style={{ borderColor: "var(--line)", background: "color-mix(in srgb, var(--panel-solid) 88%, transparent)" }}
+    >
+      <div className="text-xs font-semibold text-[var(--muted-strong)] sm:text-sm">{label}</div>
       <div className={cn("text-lg font-bold text-balance-safe sm:text-xl", toneClass)}>
         {prefix}{money(value)} ฿
       </div>
@@ -504,19 +508,19 @@ function StatCard({ title, value, subtitle, tone, href, icon: Icon }: { title: s
   const content = (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} whileHover={{ y: -3 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "apple-soft h-full rounded-[24px] p-5 transition-all",
+        "apple-soft h-full rounded-[18px] p-3 transition-all sm:rounded-[24px] sm:p-5",
         href && "cursor-pointer hover:shadow-lg"
       )}>
-      <div className="mb-4 flex items-center justify-between">
-        <div className="text-sm font-medium text-muted">{title}</div>
+      <div className="mb-2 flex items-center justify-between gap-2 sm:mb-4">
+        <div className="min-w-0 truncate text-xs font-medium text-muted sm:text-sm">{title}</div>
         {Icon && (
-          <div className={cn("flex h-9 w-9 items-center justify-center rounded-2xl", toneClass)} style={{ background: "var(--primary-soft)" }}>
-            <Icon className="h-4 w-4" />
+          <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl sm:h-9 sm:w-9", toneClass)} style={{ background: "var(--primary-soft)" }}>
+            <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </div>
         )}
       </div>
-      <div className="text-balance-safe text-xl font-bold tracking-tight sm:text-2xl">{value}</div>
-      {subtitle && <div className="mt-1 text-xs text-muted">{subtitle}</div>}
+      <div className="text-balance-safe text-lg font-bold tracking-tight sm:text-2xl">{value}</div>
+      {subtitle && <div className="mt-1 line-clamp-1 text-[11px] text-muted sm:text-xs">{subtitle}</div>}
     </motion.div>
   );
 

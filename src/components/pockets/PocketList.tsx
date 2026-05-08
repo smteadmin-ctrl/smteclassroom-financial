@@ -16,12 +16,12 @@ export function PocketList() {
     if (pockets.length === 0) return null;
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
             <div>
-                <h2 className="text-xl font-bold tracking-tight">Pockets</h2>
-                <p className="text-sm text-muted">Your money split by payment source.</p>
+                <h2 className="text-lg font-bold tracking-tight sm:text-xl">กระเป๋าเงิน</h2>
+                <p className="text-xs text-muted sm:text-sm">แยกยอดเงินตามช่องทางการรับจ่าย</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-2 min-[380px]:grid-cols-2 sm:gap-3 xl:grid-cols-3">
                 {pockets.map((pocket) => (
                     <PocketCard
                         key={pocket.id}

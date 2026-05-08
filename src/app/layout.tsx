@@ -9,9 +9,9 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Classroom Finance 5.0",
+  title: "ระบบการเงินห้องเรียน 5.0",
   description:
-    "Dashboard, Transactions, Schedule, and Students management for classroom finances",
+    "ระบบจัดการการเงินห้องเรียน รายการเงิน กำหนดการ หมวดหมู่ และข้อมูลนักเรียน",
 };
 
 export default function RootLayout({
@@ -34,14 +34,14 @@ export default function RootLayout({
             },
           }} />
           <HydrationGate fallback={<LoadingScreen />}>
-            <div className="relative min-h-dvh p-0 md:p-4 xl:p-5">
-              <div className="app-shell min-h-dvh md:grid md:grid-cols-[104px_1fr] lg:grid-cols-[220px_1fr] md:rounded-[26px] xl:rounded-[30px]">
-                <aside className="hidden md:block border-r" style={{ borderColor: "var(--line)" }}>
+            <div className="relative h-dvh overflow-hidden p-0 md:p-4 xl:p-5">
+              <div className="app-shell flex h-full min-h-0 flex-col md:grid md:grid-cols-[104px_1fr] lg:grid-cols-[220px_1fr] md:rounded-[26px] xl:rounded-[30px]">
+                <aside className="hidden min-h-0 overflow-hidden border-r md:block" style={{ borderColor: "var(--line)" }}>
                   <Sidebar />
                 </aside>
-                <div className="flex min-h-dvh min-w-0 flex-col">
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
                   <MobileNav />
-                  <main className="flex-1 w-full max-w-[1420px] min-w-0 mx-auto px-3 py-4 pb-24 sm:px-4 md:px-5 md:py-6 lg:px-7 xl:px-8 xl:py-8">{children}</main>
+                  <main className="mx-auto flex w-full max-w-[1420px] min-w-0 flex-1 flex-col overflow-hidden px-2.5 py-3 pb-[calc(5.25rem+env(safe-area-inset-bottom))] sm:px-4 sm:py-4 md:min-h-0 md:px-5 md:py-6 md:pb-6 lg:px-7 xl:px-8 xl:py-8">{children}</main>
                   <BottomTabNav />
                 </div>
               </div>

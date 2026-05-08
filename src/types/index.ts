@@ -17,6 +17,7 @@ export interface Student {
   lastName: string;
   nickName?: string;
   avatarUrl?: string;
+  lineUserId?: string;
 }
 
 export interface Schedule {

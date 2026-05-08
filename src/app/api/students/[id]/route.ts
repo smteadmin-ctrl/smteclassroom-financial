@@ -5,7 +5,7 @@ import type { StudentUpdate } from "@/types/supabase";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-const studentColumns = ["prefix", "first_name", "last_name", "nick_name", "number", "avatar_url"];
+const studentColumns = ["prefix", "first_name", "last_name", "nick_name", "number", "avatar_url", "line_user_id"];
 
 export async function GET(_request: Request, context: RouteContext) {
   try {

@@ -19,41 +19,41 @@ const StudentCard = memo(({ student, stats, onClick }: { student: Student; stats
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
     onClick={onClick}
-    className="apple-card hover-lift group min-w-0 cursor-pointer p-3 sm:p-4 hover:shadow-xl"
+    className="apple-card hover-lift group min-w-0 cursor-pointer p-2.5 hover:shadow-xl sm:p-4"
   >
-    <div className="mb-3 flex items-center justify-center">
+    <div className="mb-2 flex items-center justify-center sm:mb-3">
       {student.avatarUrl ? (
         <img
           src={student.avatarUrl}
           alt={student.firstName}
-          className="h-16 w-16 rounded-full object-cover sm:h-20 sm:w-20"
+          className="h-12 w-12 rounded-full object-cover min-[390px]:h-14 min-[390px]:w-14 sm:h-20 sm:w-20"
         />
       ) : (
-        <div className="flex h-16 w-16 items-center justify-center rounded-3xl sm:h-20 sm:w-20" style={{ background: "var(--primary-soft)" }}>
-          <User className="h-8 w-8 text-[var(--primary)] sm:h-10 sm:w-10" />
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl min-[390px]:h-14 min-[390px]:w-14 sm:h-20 sm:w-20 sm:rounded-3xl" style={{ background: "var(--primary-soft)" }}>
+          <User className="h-6 w-6 text-[var(--primary)] sm:h-10 sm:w-10" />
         </div>
       )}
     </div>
     <div className="min-w-0 text-center">
-      <div className="text-xs text-muted">เลขที่ {student.number}</div>
-      <div className="truncate font-medium" title={`${student.prefix} ${student.firstName} ${student.lastName}`}>
+      <div className="text-xs font-semibold text-[var(--muted-strong)]">เลขที่ {student.number}</div>
+      <div className="truncate text-sm font-semibold sm:text-base" title={`${student.prefix} ${student.firstName} ${student.lastName}`}>
         {student.prefix} {student.firstName}
       </div>
-      <div className="truncate text-sm text-muted">{student.nickName}</div>
+      <div className="truncate text-xs font-medium text-[var(--muted-strong)] sm:text-sm">{student.nickName}</div>
     </div>
-    <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-      <div className="rounded-2xl p-2 text-emerald-700 dark:text-emerald-300" style={{ background: "color-mix(in srgb, var(--success) 10%, transparent)" }}>
-        <div className="opacity-80">จ่ายแล้ว</div>
+    <div className="mt-2 grid grid-cols-2 gap-1.5 text-[11px] min-[390px]:gap-2 sm:mt-3 sm:text-xs">
+      <div className="rounded-xl p-1.5 sm:rounded-2xl sm:p-2" style={{ background: "color-mix(in srgb, var(--success) 18%, transparent)", color: "#047857" }}>
+        <div className="font-semibold opacity-95">จ่ายแล้ว</div>
         <div className="font-semibold">{stats.paidTotal.toLocaleString()} ฿</div>
       </div>
-      <div className="rounded-2xl p-2 text-amber-700 dark:text-amber-300" style={{ background: "color-mix(in srgb, var(--warning) 12%, transparent)" }}>
-        <div className="opacity-80">ค้าง</div>
+      <div className="rounded-xl p-1.5 sm:rounded-2xl sm:p-2" style={{ background: "color-mix(in srgb, var(--warning) 20%, transparent)", color: "#b45309" }}>
+        <div className="font-semibold opacity-95">ค้าง</div>
         <div className="font-semibold">{stats.leftTotal.toLocaleString()} ฿</div>
       </div>
-      <div className="apple-soft col-span-2 rounded-2xl p-2 text-muted">
+      <div className="apple-soft col-span-2 rounded-xl p-1.5 text-[var(--muted-strong)] sm:rounded-2xl sm:p-2">
         <div className="flex items-center justify-between">
-          <span className="opacity-80">สถานะกำหนดการ</span>
-          <span className="shrink-0 pl-2 font-semibold">{stats.paidCount}/{stats.totalSchedules}</span>
+          <span className="font-medium">สถานะกำหนดการ</span>
+          <span className="shrink-0 pl-2 font-bold">{stats.paidCount}/{stats.totalSchedules}</span>
         </div>
       </div>
     </div>
@@ -102,7 +102,7 @@ export function StudentsGrid() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
   return (
-    <div>
+    <div className="flex h-full min-h-0 flex-col">
       <AddStudentModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
       {selectedStudent && (
         <StudentDetailModal
@@ -112,14 +112,14 @@ export function StudentsGrid() {
         />
       )}
       
-      <div className="responsive-actions mb-4">
+      <div className="grid shrink-0 grid-cols-2 gap-2 pb-2 sm:flex sm:flex-wrap sm:items-center sm:pb-4">
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="apple-button px-4 py-2 text-sm"
+          className="apple-button col-span-2 px-4 py-2 text-sm sm:col-span-1"
         >
           <Plus className="h-4 w-4" /> เพิ่มนักเรียนเดี่ยว
         </button>
-        <label className="apple-ghost-button cursor-pointer px-4 py-2 text-sm">
+        <label className="apple-ghost-button cursor-pointer px-3 py-2 text-sm">
           <Upload className="h-4 w-4" /> นำเข้า CSV
           <input
             type="file"
@@ -211,22 +211,23 @@ export function StudentsGrid() {
             a.remove();
             URL.revokeObjectURL(url);
           }}
-          className="apple-ghost-button px-4 py-2 text-sm"
+          className="apple-ghost-button px-3 py-2 text-sm"
         >
           <FileDown className="h-4 w-4" /> ดาวน์โหลดเทมเพลต CSV
         </button>
-        {isImporting && <span className="self-center text-sm text-blue-600">กำลังนำเข้า...</span>}
+        {isImporting && <span className="col-span-2 self-center text-center text-sm text-blue-600 sm:col-span-1">กำลังนำเข้า...</span>}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <div className="student-card-scroll -mx-1 min-h-0 flex-1 overflow-y-auto px-1 pb-3 sm:pr-2">
+        <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {/* Add Student Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           onClick={() => setIsAddModalOpen(true)}
-          className="apple-card hover-lift flex min-h-[170px] cursor-pointer flex-col items-center justify-center border-2 border-dashed p-4 hover:shadow-xl sm:min-h-[200px]"
+          className="apple-card hover-lift flex min-h-[126px] cursor-pointer flex-col items-center justify-center border-2 border-dashed p-3 hover:shadow-xl sm:min-h-[200px] sm:p-4"
         >
-          <Plus className="mb-2 h-10 w-10 text-zinc-400" />
+          <Plus className="mb-2 h-8 w-8 text-zinc-400 sm:h-10 sm:w-10" />
           <div className="text-sm font-medium text-muted">เพิ่มนักเรียน</div>
         </motion.div>
 
@@ -248,6 +249,7 @@ export function StudentsGrid() {
             />
           );
         })}
+        </div>
       </div>
     </div>
   );

@@ -3,15 +3,17 @@ import { CategoriesGrid } from "@/components/categories/CategoriesGrid";
 
 export default function CategoriesPage() {
   return (
-    <div className="page-stack">
-      <div>
+    <div className="fixed-page">
+      <div className="fixed-page-header">
         <h1 className="section-title text-2xl sm:text-3xl md:text-4xl">หมวดหมู่</h1>
         <p className="page-kicker">จัดการหมวดหมู่รายการทั้งหมดด้วยไอคอนและสีที่ชัดเจน</p>
       </div>
       
-      <Suspense fallback={<LoadingGrid />}>
-        <CategoriesGrid />
-      </Suspense>
+      <div className="fixed-page-body">
+        <Suspense fallback={<LoadingGrid />}>
+          <CategoriesGrid />
+        </Suspense>
+      </div>
     </div>
   );
 }

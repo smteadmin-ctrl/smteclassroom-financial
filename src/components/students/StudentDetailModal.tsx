@@ -174,12 +174,13 @@ export function StudentDetailModal({ isOpen, onClose, student: initialStudent }:
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 z-50 grid place-items-center overflow-hidden p-3 sm:p-4">
+          <div className="fixed inset-0 z-50 grid place-items-center overflow-hidden p-2 sm:p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="apple-panel relative flex max-h-[min(760px,calc(100dvh-1.5rem))] w-full max-w-3xl flex-col overflow-hidden"
+              transition={{ type: "spring", duration: 0.42, bounce: 0.14 }}
+              className="apple-panel relative flex max-h-[calc(100dvh-1rem)] w-full max-w-3xl flex-col overflow-hidden sm:max-h-[min(760px,calc(100dvh-2rem))]"
               onClick={(event) => event.stopPropagation()}
             >
               {/* Header */}
@@ -194,7 +195,7 @@ export function StudentDetailModal({ isOpen, onClose, student: initialStudent }:
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 gap-3 sm:gap-4">
                     {/* Avatar */}
-                    <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 sm:h-16 sm:w-16">
+                    <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900 dark:to-blue-900 sm:h-16 sm:w-16">
                       {student.avatarUrl ? (
                         <img
                           src={student.avatarUrl}
@@ -261,30 +262,30 @@ export function StudentDetailModal({ isOpen, onClose, student: initialStudent }:
                 </div>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto">
+              <div className="student-card-scroll min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
               {/* Payment Summary */}
               <div className="border-b px-4 py-4 sm:px-6" style={{ borderColor: "var(--line)" }}>
                 <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-                  <div className="rounded-xl border border-emerald-200/60 bg-emerald-50/80 p-4 dark:border-emerald-500/20 dark:bg-emerald-950/20">
-                    <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                  <div className="rounded-xl border p-4 shadow-sm" style={{ borderColor: "rgba(16, 166, 106, 0.28)", background: "linear-gradient(180deg, #ecfdf5, #f7fffb)" }}>
+                    <div className="text-sm font-semibold text-emerald-900">
                       ยอดเงินที่ชำระ
                     </div>
-                    <div className="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                    <div className="mt-1 text-2xl font-bold text-emerald-600">
                       {totalPaid.toLocaleString()} ฿
                     </div>
-                    <div className="mt-1 text-xs text-zinc-500">
+                    <div className="mt-1 text-xs font-medium text-emerald-800/80">
                       {paidTransactions.length} รายการ
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-rose-200/60 bg-rose-50/80 p-4 dark:border-rose-500/20 dark:bg-rose-950/20">
-                    <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                  <div className="rounded-xl border p-4 shadow-sm" style={{ borderColor: "rgba(227, 66, 101, 0.28)", background: "linear-gradient(180deg, #fff1f3, #fff8f9)" }}>
+                    <div className="text-sm font-semibold text-rose-900">
                       ยอดเงินที่ค้าง
                     </div>
-                    <div className="mt-1 text-2xl font-bold text-rose-600 dark:text-rose-400">
+                    <div className="mt-1 text-2xl font-bold text-rose-500">
                       {totalUnpaid.toLocaleString()} ฿
                     </div>
-                    <div className="mt-1 text-xs text-zinc-500">
+                    <div className="mt-1 text-xs font-medium text-rose-800/80">
                       {unpaidItems.length} รายการ
                     </div>
                   </div>
@@ -344,10 +345,10 @@ export function StudentDetailModal({ isOpen, onClose, student: initialStudent }:
                           key={item.id}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="group flex items-center justify-between rounded-xl border p-4 transition-colors hover:bg-white/60 dark:hover:bg-zinc-800/50"
+                          className="group flex flex-col gap-3 rounded-xl border p-4 transition-colors hover:bg-white/60 sm:flex-row sm:items-center sm:justify-between dark:hover:bg-zinc-800/50"
                           style={{ borderColor: "var(--line)" }}
                         >
-                          <div>
+                          <div className="min-w-0">
                             <div className="font-medium">{item.name}</div>
                             <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                               {item.folderPath && <span>{item.folderPath}</span>}
@@ -358,12 +359,12 @@ export function StudentDetailModal({ isOpen, onClose, student: initialStudent }:
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-4">
+                          <div className="flex shrink-0 items-center justify-between gap-4 sm:justify-end">
                             <div className="text-lg font-semibold text-rose-600 dark:text-rose-400">
                               {item.amount.toLocaleString()} ฿
                             </div>
                             <button
-                              className="apple-button opacity-0 px-4 py-2 text-sm group-hover:opacity-100"
+                              className="apple-button px-4 py-2 text-sm"
                               onClick={() => {
                                 setQuickPayScheduleId(item.id);
                               }}
@@ -389,10 +390,10 @@ export function StudentDetailModal({ isOpen, onClose, student: initialStudent }:
                           key={item.id}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="flex items-center justify-between rounded-xl border p-4"
+                          className="flex flex-col gap-2 rounded-xl border p-4 sm:flex-row sm:items-center sm:justify-between"
                           style={{ borderColor: "var(--line)" }}
                         >
-                          <div>
+                          <div className="min-w-0">
                             <div className="font-medium">{item.name}</div>
                             <div className="mt-1 flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
                               <span>{format(new Date(item.date), "dd/MM/yyyy HH:mm")}</span>

@@ -13,7 +13,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
         type="button"
         onClick={toggleTheme}
         className="apple-icon-button"
-        aria-label="Toggle theme"
+        aria-label="สลับธีม"
       >
         <Icon className="h-4 w-4" />
       </button>
@@ -23,9 +23,9 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
   return (
     <div className="apple-segmented p-1">
       {[
-        { key: "light", label: "Light", icon: Sun },
-        { key: "system", label: "System", icon: Monitor },
-        { key: "dark", label: "Dark", icon: Moon },
+        { key: "light", label: "สว่าง", icon: Sun },
+        { key: "system", label: "ระบบ", icon: Monitor },
+        { key: "dark", label: "มืด", icon: Moon },
       ].map((item) => {
         const Icon = item.icon;
         const active = mode === item.key;
@@ -45,4 +45,3 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
     </div>
   );
 }
-

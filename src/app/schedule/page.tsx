@@ -24,16 +24,18 @@ export default function SchedulePage({
   searchParams: Promise<{ scheduleId?: string; status?: string }>;
 }) {
   return (
-    <div className="page-stack">
-      <div>
-        <h1 className="section-title text-2xl sm:text-3xl md:text-4xl">Schedule</h1>
-        <p className="page-kicker">Organize collections by folder, date, and payment status.</p>
+    <div className="fixed-page">
+      <div className="fixed-page-header">
+        <h1 className="section-title text-2xl sm:text-3xl md:text-4xl">กำหนดการ</h1>
+        <p className="page-kicker">จัดกลุ่มการเก็บเงินตามโฟลเดอร์ วันที่ และสถานะการชำระ</p>
       </div>
-      <ErrorBoundary>
-        <Suspense fallback={<ScheduleViewSkeleton />}>
-          <ScheduleView searchParamsPromise={searchParams} />
-        </Suspense>
-      </ErrorBoundary>
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <ErrorBoundary>
+          <Suspense fallback={<ScheduleViewSkeleton />}>
+            <ScheduleView searchParamsPromise={searchParams} />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
     </div>
   );
 }

@@ -30,6 +30,7 @@ export async function POST(request: Request) {
           nick_name: emptyToNull(student.nick_name),
           number: student.number,
           avatar_url: emptyToNull(student.avatar_url),
+          line_user_id: emptyToNull(student.line_user_id),
         })
       )
     );

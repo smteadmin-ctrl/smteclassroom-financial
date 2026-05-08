@@ -7,12 +7,12 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 export function Sidebar() {
   const pathname = usePathname();
   return (
-    <div className="flex h-full flex-col items-center gap-5 px-3 py-6 lg:items-stretch lg:px-4">
+    <div className="flex h-full min-h-0 flex-col items-center gap-5 overflow-hidden px-3 py-6 lg:items-stretch lg:px-4">
       <Link href="/dashboard" className="visual-gradient pressable flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-black text-white shadow-lg lg:w-full lg:justify-start lg:gap-3 lg:px-4">
         <span>S</span>
-        <span className="hidden text-sm font-bold lg:inline">SMTE Finance</span>
+        <span className="hidden text-sm font-bold lg:inline">การเงินห้องเรียน</span>
       </Link>
-      <nav className="flex flex-1 flex-col items-center gap-2.5 pt-8 lg:items-stretch">
+      <nav className="flex min-h-0 flex-1 flex-col items-center gap-2.5 overflow-y-auto pt-8 lg:items-stretch">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname?.startsWith(href);
           return (

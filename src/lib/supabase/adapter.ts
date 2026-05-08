@@ -16,6 +16,7 @@ export function dbStudentToStudent(db: DbStudent): UIStudent {
     nickName: db.nick_name,
     number: db.number,
     avatarUrl: db.avatar_url,
+    lineUserId: db.line_user_id,
   };
 }
 
@@ -27,6 +28,7 @@ export function studentToDbStudent(student: Omit<UIStudent, "id">): Omit<DbStude
     nick_name: student.nickName,
     number: student.number,
     avatar_url: student.avatarUrl,
+    line_user_id: student.lineUserId,
   };
 }
 

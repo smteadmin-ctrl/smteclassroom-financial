@@ -7,6 +7,7 @@ export type Student = {
   nick_name?: string;
   number: number;
   avatar_url?: string;
+  line_user_id?: string;
   created_at: string;
   updated_at: string;
 };
@@ -64,9 +65,10 @@ export type ScheduleFolderInput = Omit<ScheduleFolder, "id" | "created_at" | "up
 export type TransactionInput = Omit<Transaction, "id" | "created_at" | "updated_at">;
 
 // Update types (partial without auto-generated fields)
-export type StudentUpdate = Partial<Omit<Student, "id" | "created_at" | "updated_at" | "nick_name" | "avatar_url">> & {
+export type StudentUpdate = Partial<Omit<Student, "id" | "created_at" | "updated_at" | "nick_name" | "avatar_url" | "line_user_id">> & {
   nick_name?: string | null;
   avatar_url?: string | null;
+  line_user_id?: string | null;
 };
 export type ScheduleUpdate = Partial<Omit<Schedule, "id" | "created_at" | "updated_at" | "end_date" | "description">> & {
   end_date?: string | null;

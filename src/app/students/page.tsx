@@ -5,7 +5,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 function StudentsGridSkeleton() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
       <StudentCardSkeleton />
       <StudentCardSkeleton />
       <StudentCardSkeleton />
@@ -18,16 +18,18 @@ function StudentsGridSkeleton() {
 
 export default function StudentsPage() {
   return (
-    <div className="page-stack">
-      <div>
-        <h1 className="section-title text-2xl sm:text-3xl md:text-4xl">Students</h1>
-        <p className="page-kicker">Student profiles, avatars, and payment readiness at a glance.</p>
+    <div className="fixed-page">
+      <div className="fixed-page-header">
+        <h1 className="section-title text-2xl sm:text-3xl md:text-4xl">นักเรียน</h1>
+        <p className="page-kicker">ข้อมูลนักเรียน รูปโปรไฟล์ และสถานะการชำระเงิน</p>
       </div>
-      <ErrorBoundary>
-        <Suspense fallback={<StudentsGridSkeleton />}>
-          <StudentsGrid />
-        </Suspense>
-      </ErrorBoundary>
+      <div className="min-h-0 flex-1">
+        <ErrorBoundary>
+          <Suspense fallback={<StudentsGridSkeleton />}>
+            <StudentsGrid />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
     </div>
   );
 }

@@ -25,16 +25,18 @@ function DashboardSkeleton() {
 
 export default function DashboardPage() {
   return (
-    <div className="page-stack">
-      <div className="flex flex-col gap-1">
-        <h1 className="section-title text-2xl sm:text-3xl md:text-4xl">Analytics</h1>
-        <p className="page-kicker">A clean overview of classroom money, schedules, and collections.</p>
+    <div className="fixed-page">
+      <div className="fixed-page-header flex flex-col gap-1">
+        <h1 className="section-title text-2xl sm:text-3xl md:text-4xl">ภาพรวม</h1>
+        <p className="page-kicker">สรุปเงินห้อง กำหนดการ และการเก็บเงินในหน้าเดียว</p>
       </div>
-      <ErrorBoundary>
-        <Suspense fallback={<DashboardSkeleton />}>
-          <DashboardOverview />
-        </Suspense>
-      </ErrorBoundary>
+      <div className="fixed-page-body">
+        <ErrorBoundary>
+          <Suspense fallback={<DashboardSkeleton />}>
+            <DashboardOverview />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
     </div>
   );
 }

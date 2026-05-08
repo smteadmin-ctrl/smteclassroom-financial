@@ -96,7 +96,7 @@ export function CategoryDetailModal({ isOpen, onClose, category: initialCategory
             >
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900">
+                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900 dark:to-blue-900">
                   {isCustomImage ? (
                     <img src={iconValue} alt={category.name} className="h-full w-full object-cover" />
                   ) : (

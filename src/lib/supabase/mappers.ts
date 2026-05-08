@@ -19,6 +19,7 @@ export function mapStudent(row: Row): Student {
     nick_name: row.nick_name ? String(row.nick_name) : undefined,
     number: Number(row.number),
     avatar_url: row.avatar_url ? String(row.avatar_url) : undefined,
+    line_user_id: row.line_user_id ? String(row.line_user_id) : undefined,
     created_at: toIso(row.created_at),
     updated_at: toIso(row.updated_at),
   };

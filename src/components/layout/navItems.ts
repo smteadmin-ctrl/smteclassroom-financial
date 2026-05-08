@@ -1,11 +1,11 @@
 import { CalendarDays, ChartNoAxesCombined, FolderKanban, ReceiptText, UsersRound } from "lucide-react";
 
 export const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", shortLabel: "Dash", icon: ChartNoAxesCombined },
-  { href: "/transactions", label: "Transactions", shortLabel: "Pay", icon: ReceiptText },
-  { href: "/schedule", label: "Schedule", shortLabel: "Schedule", icon: CalendarDays },
-  { href: "/categories", label: "Categories", shortLabel: "Groups", icon: FolderKanban },
-  { href: "/students", label: "Students", shortLabel: "Students", icon: UsersRound },
+  { href: "/dashboard", label: "ภาพรวม", shortLabel: "ภาพรวม", icon: ChartNoAxesCombined },
+  { href: "/transactions", label: "รายการเงิน", shortLabel: "รายการ", icon: ReceiptText },
+  { href: "/schedule", label: "กำหนดการ", shortLabel: "กำหนด", icon: CalendarDays },
+  { href: "/categories", label: "หมวดหมู่", shortLabel: "หมวด", icon: FolderKanban },
+  { href: "/students", label: "นักเรียน", shortLabel: "นักเรียน", icon: UsersRound },
 ] as const;
 
 export type NavItem = typeof NAV_ITEMS[number];

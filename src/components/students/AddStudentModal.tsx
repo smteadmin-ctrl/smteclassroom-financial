@@ -17,6 +17,7 @@ const schema = z.object({
   lastName: z.string().min(1, "กรุณาระบุนามสกุล"),
   nickName: z.string().optional(),
   number: z.number().min(1, "กรุณาระบุเลขที่"),
+  lineUserId: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -27,7 +28,6 @@ interface Props {
 }
 
 export function AddStudentModal({ isOpen, onClose }: Props) {
-  const data = useAppStore((state) => state.data);
   const addStudent = useAppStore((state) => state.addStudent);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -65,6 +65,7 @@ export function AddStudentModal({ isOpen, onClose }: Props) {
         nick_name: formData.nickName,
         number: formData.number,
         avatar_url: undefined,
+        line_user_id: formData.lineUserId?.trim() || undefined,
       });
 
       let finalAvatarUrl: string | undefined = undefined;
@@ -103,7 +104,7 @@ export function AddStudentModal({ isOpen, onClose }: Props) {
         {/* Avatar Upload */}
         <div className="flex flex-col items-center gap-3 border-b pb-4">
           <div className="relative">
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900 dark:to-blue-900">
               {previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="h-24 w-24 rounded-full object-cover" />
               ) : (
@@ -185,6 +186,19 @@ export function AddStudentModal({ isOpen, onClose }: Props) {
             />
             {errors.number && <p className="mt-1 text-sm text-red-600">{errors.number.message}</p>}
           </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium">LINE User ID</label>
+          <input
+            type="text"
+            {...register("lineUserId")}
+            className="w-full rounded-md border px-3 py-2"
+            placeholder="Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            autoCapitalize="none"
+            autoCorrect="off"
+          />
+          <p className="mt-1 text-xs text-zinc-500">ใช้สำหรับส่งแจ้งเตือนชำระเงินผ่าน LINE Messaging API</p>
         </div>
 
         <div className="flex gap-2">

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo, memo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { Plus, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { filterTransactions } from "@/lib/calculations";
 import { TxnSource, TxnKind, PaymentMethod, Transaction } from "@/types";
@@ -67,7 +67,7 @@ const TransactionRow = memo(({
         {transaction.kind === "income" ? "+" : transaction.kind === "transfer" ? "" : "-"}{transaction.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ฿
       </td>
       <td className="px-4 py-3 capitalize">
-        {transaction.kind === "transfer" ? "Internal" : (transaction.method || "-")}
+        {transaction.kind === "transfer" ? "ภายใน" : (transaction.method || "-")}
       </td>
       <td className="px-4 py-3">{transaction.kind === "transfer" ? "โอนย้าย" : (transaction.source === "schedule" ? "-" : (transaction.category || "-"))}</td>
       <td className="px-4 py-3 text-zinc-500">{format(new Date(transaction.createdAt), "dd/MM/yyyy HH:mm")}</td>
@@ -95,6 +95,7 @@ export function TransactionsList() {
   // Determine active tab based on URL params
   const initialTab = urlKind === "transfer" ? "transfer" : urlSource === "schedule" ? "schedule" : urlSource === "transaction" ? "transaction" : "all";
   const [activeTab, setActiveTab] = useState<"transaction" | "schedule" | "transfer" | "all">(initialTab);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Debounce search input to reduce re-renders
   const debouncedSearch = useDebounce(search, 300);
@@ -119,15 +120,15 @@ export function TransactionsList() {
   }, [data.transactions, data.students, source, kind, method, debouncedSearch]);
 
   return (
-    <div className="min-w-0 space-y-4">
+    <div className="flex h-full min-h-0 min-w-0 flex-col gap-1.5 sm:gap-4">
       {/* Tabs + Filters */}
-      <div className="apple-card flex min-w-0 flex-col gap-3 p-3 sm:p-4">
+      <div className="apple-card flex min-w-0 shrink-0 flex-col gap-1.5 p-2 sm:gap-3 sm:p-4">
         {/* Tabs */}
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+        <div className="grid grid-cols-4 gap-1 sm:flex sm:gap-2 sm:overflow-x-auto sm:pb-1 sm:[scrollbar-width:none]">
           {[
-            { key: "transaction", label: "รายการธุรกรรม" },
-            { key: "schedule", label: "รายการกำหนดการ" },
-            { key: "transfer", label: "โอนย้ายภายใน" },
+            { key: "transaction", label: "รายการธุรกรรม", shortLabel: "ทั่วไป" },
+            { key: "schedule", label: "รายการกำหนดการ", shortLabel: "กำหนด" },
+            { key: "transfer", label: "โอนย้ายภายใน", shortLabel: "โอน" },
             { key: "all", label: "ทั้งหมด" },
           ].map((tab) => (
             <button
@@ -147,21 +148,22 @@ export function TransactionsList() {
                   }
                 }
               }}
-              className={`shrink-0 rounded-full border px-3 py-2 text-sm font-semibold transition-colors
+              className={`min-w-0 rounded-full border px-1.5 py-1.5 text-[11px] font-semibold transition-colors sm:shrink-0 sm:px-3 sm:py-2 sm:text-sm
                 ${activeTab === tab.key ? "border-transparent text-white" : "text-muted hover:bg-white/50 dark:hover:bg-white/5"}`}
               style={activeTab === tab.key ? { background: "var(--primary)" } : { borderColor: "var(--line)" }}
               aria-label={tab.label}
             >
-              {tab.label}
+              <span className="sm:hidden">{tab.shortLabel || tab.label}</span>
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           ))}
         </div>
 
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-[160px_190px_minmax(220px,1fr)_auto]">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] gap-1.5 sm:grid-cols-2 sm:gap-2 xl:grid-cols-[160px_190px_minmax(220px,1fr)_auto]">
           <select
             value={kind}
             onChange={(e) => setKind(e.target.value as TxnKind | "")}
-            className="rounded-full border px-3 py-2 text-sm"
+            className="hidden h-9 rounded-full border px-2.5 py-1.5 text-xs sm:block sm:h-10 sm:px-3 sm:py-2 sm:text-sm"
             aria-label="รายรับ/รายจ่าย"
             disabled={activeTab === "schedule"}
           >
@@ -174,7 +176,7 @@ export function TransactionsList() {
           <select
             value={method}
             onChange={(e) => setMethod(e.target.value as PaymentMethod | "")}
-            className="rounded-full border px-3 py-2 text-sm"
+            className="hidden h-9 rounded-full border px-2.5 py-1.5 text-xs sm:block sm:h-10 sm:px-3 sm:py-2 sm:text-sm"
             aria-label="ประเภทการชำระ"
           >
             <option value="">ทุกประเภทการชำระ</option>
@@ -183,22 +185,52 @@ export function TransactionsList() {
             <option value="truemoney">TrueMoney</option>
           </select>
 
-          <div className="relative sm:col-span-2 xl:col-span-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+          <div className="relative min-w-0 xl:col-span-1">
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400 sm:h-4 sm:w-4" />
             <input
               type="text"
-              placeholder="ค้นหา (ชื่อ, ยอดเงิน, หมวดหมู่...)"
+              placeholder="ค้นหา"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-full border py-2 pl-10 pr-3 text-sm"
+              className="h-9 w-full rounded-full border py-1.5 pl-9 pr-3 text-xs sm:h-10 sm:py-2 sm:pl-10 sm:text-sm"
               aria-label="ค้นหา"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:col-span-2 xl:col-span-1 xl:flex xl:items-center">
+          <button
+            type="button"
+            onClick={() => setShowMobileFilters((value) => !value)}
+            className="apple-icon-button h-9 w-9 sm:hidden"
+            aria-label="ตัวกรองเพิ่มเติม"
+            aria-expanded={showMobileFilters}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+          </button>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="apple-button px-4 py-2 text-sm"
+            className="apple-icon-button h-9 w-9 sm:hidden"
+            aria-label="เพิ่มรายการ"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("transaction");
+              setSource("transaction");
+              setKind("");
+              setMethod("");
+              setSearch("");
+            }}
+            className="apple-icon-button h-9 w-9 sm:hidden"
+            aria-label="ล้างตัวกรอง"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </button>
+
+          <div className="hidden grid-cols-2 gap-1.5 sm:col-span-2 sm:grid sm:gap-2 xl:col-span-1 xl:flex xl:items-center">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="apple-button h-9 px-4 py-1.5 text-sm sm:h-10 sm:py-2"
             aria-label="เพิ่มรายการ"
           >
             <Plus className="h-4 w-4" />
@@ -212,19 +244,48 @@ export function TransactionsList() {
               setMethod("");
               setSearch("");
             }}
-            className="apple-ghost-button px-4 py-2 text-sm"
+            className="apple-ghost-button h-9 px-4 py-1.5 text-sm sm:h-10 sm:py-2"
             aria-label="ล้างตัวกรอง"
           >
             รีเซ็ต
           </button>
           </div>
         </div>
+
+        {showMobileFilters && (
+          <div className="grid grid-cols-2 gap-1.5 sm:hidden">
+            <select
+              value={kind}
+              onChange={(e) => setKind(e.target.value as TxnKind | "")}
+              className="h-9 rounded-full border px-2.5 py-1.5 text-xs"
+              aria-label="รายรับ/รายจ่าย"
+              disabled={activeTab === "schedule"}
+            >
+              <option value="">รายรับ/รายจ่าย</option>
+              <option value="income">รายรับ</option>
+              {activeTab !== "schedule" && <option value="expense">รายจ่าย</option>}
+              {activeTab !== "schedule" && <option value="transfer">โอนย้าย</option>}
+            </select>
+            <select
+              value={method}
+              onChange={(e) => setMethod(e.target.value as PaymentMethod | "")}
+              className="h-9 rounded-full border px-2.5 py-1.5 text-xs"
+              aria-label="ประเภทการชำระ"
+            >
+              <option value="">ทุกช่องทาง</option>
+              <option value="kplus">K PLUS</option>
+              <option value="cash">เงินสด</option>
+              <option value="truemoney">TrueMoney</option>
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Add Transaction Modal */}
       <AddTransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
       {/* Statement Table / List */}
+      <div className="student-card-scroll min-h-0 flex-1 overflow-y-auto sm:pr-2">
       <div className="polished-table min-w-0">
         {/* Mobile View (Cards) */}
         <div className="block divide-y md:hidden" style={{ borderColor: "var(--line)" }}>
@@ -249,29 +310,35 @@ export function TransactionsList() {
               } : null;
 
               return (
-                <div key={t.id} onClick={() => setSelectedTransaction(t)} className="min-w-0 p-3 active:bg-white/60 dark:active:bg-white/5 min-[390px]:p-4">
+                <div key={t.id} onClick={() => setSelectedTransaction(t)} className="min-w-0 p-2.5 active:bg-white/60 sm:p-3 dark:active:bg-white/5">
                   <div className="mb-1 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                     <div className="flex min-w-0 flex-col">
-                      <div className="truncate text-sm font-medium" title={t.name}>{t.name}</div>
+                      <div className="truncate text-sm font-semibold" title={t.name}>{t.name}</div>
                       {transferInfo && (
-                        <div className="mt-0.5 flex min-w-0 items-center gap-1 text-[10px] text-zinc-500">
-                          <span className="truncate rounded bg-zinc-100 px-1 dark:bg-zinc-800">{transferInfo.src}</span>
-                          <span>→</span>
-                          <span className="truncate rounded bg-zinc-100 px-1 dark:bg-zinc-800">{transferInfo.dest}</span>
+                        <div className="mt-1 flex min-w-0 items-center gap-1 text-[10px] font-semibold">
+                          <span className="truncate rounded-full px-2 py-0.5 text-[var(--primary)]" style={{ background: "var(--primary-soft)" }}>{transferInfo.src}</span>
+                          <span className="text-[var(--muted-strong)]">→</span>
+                          <span className="truncate rounded-full px-2 py-0.5 text-emerald-700 dark:text-emerald-300" style={{ background: "color-mix(in srgb, var(--success) 14%, transparent)" }}>{transferInfo.dest}</span>
                         </div>
                       )}
                     </div>
-                    <div className={`whitespace-nowrap text-right text-sm font-semibold ${kindClass}`}>
+                    <div className={`whitespace-nowrap text-right text-sm font-bold ${kindClass}`}>
                       {t.kind === "income" ? "+" : t.kind === "transfer" ? "" : "-"}{t.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ฿
                     </div>
                   </div>
-                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 text-xs text-[var(--muted-strong)] dark:text-zinc-300">
                     <div className="min-w-0">
                       <div>{payer}</div>
                       <div>{format(new Date(t.createdAt), "dd/MM/yy HH:mm")}</div>
                     </div>
-                    <div className="rounded bg-zinc-100 px-2 py-1 capitalize dark:bg-zinc-800">
-                      {t.kind === "transfer" ? "Internal" : t.method}
+                    <div
+                      className="rounded-full px-2.5 py-1 font-semibold capitalize"
+                      style={{
+                        background: t.kind === "transfer" ? "var(--primary-soft)" : "color-mix(in srgb, var(--cyan) 16%, transparent)",
+                        color: t.kind === "transfer" ? "var(--primary)" : "var(--muted-strong)",
+                      }}
+                    >
+                      {t.kind === "transfer" ? "ภายใน" : t.method}
                     </div>
                   </div>
                 </div>
@@ -334,11 +401,12 @@ export function TransactionsList() {
           </table>
         </div>
       </div>
+      </div>
 
       {/* Pagination Controls */}
       {filtered.length > 0 && (
-        <div className="flex flex-col items-stretch justify-between gap-3 py-2 text-sm text-muted lg:flex-row lg:items-center">
-          <div className="flex items-center justify-center gap-2 sm:justify-start">
+        <div className="shrink-0 rounded-2xl border px-2.5 py-2 text-sm text-muted sm:flex sm:items-center sm:justify-between sm:gap-3 sm:border-0 sm:px-0" style={{ borderColor: "var(--line)" }}>
+          <div className="hidden items-center justify-center gap-2 sm:flex sm:justify-start">
             <span>แสดง</span>
             <select
               value={itemsPerPage}
@@ -356,11 +424,25 @@ export function TransactionsList() {
             <span>รายการต่อหน้า</span>
           </div>
 
-          <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
-            <span className="text-center">
-              หน้า {currentPage} จาก {Math.ceil(filtered.length / itemsPerPage)} (ทั้งหมด {filtered.length} รายการ)
+          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:gap-4">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              className="apple-ghost-button px-3 py-1 text-sm disabled:opacity-40 sm:hidden"
+            >
+              ก่อน
+            </button>
+            <span className="truncate text-center text-xs sm:text-sm">
+              หน้า {currentPage}/{Math.ceil(filtered.length / itemsPerPage)} <span className="hidden min-[390px]:inline">• {filtered.length} รายการ</span>
             </span>
-            <div className="flex gap-1">
+            <button
+              disabled={currentPage >= Math.ceil(filtered.length / itemsPerPage)}
+              onClick={() => setCurrentPage(prev => Math.min(Math.ceil(filtered.length / itemsPerPage), prev + 1))}
+              className="apple-ghost-button px-3 py-1 text-sm disabled:opacity-40 sm:hidden"
+            >
+              ถัดไป
+            </button>
+            <div className="hidden gap-1 sm:flex">
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}

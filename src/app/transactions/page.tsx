@@ -34,16 +34,18 @@ function TransactionsListSkeleton() {
 
 export default function TransactionsPage() {
   return (
-    <div className="page-stack">
-      <div>
-        <h1 className="section-title text-2xl sm:text-3xl md:text-4xl">Transactions</h1>
-        <p className="page-kicker">Search, filter, and review every cash movement.</p>
+    <div className="fixed-page">
+      <div className="fixed-page-header">
+        <h1 className="section-title text-2xl sm:text-3xl md:text-4xl">รายการเงิน</h1>
+        <p className="page-kicker">ค้นหา กรอง และตรวจสอบรายรับรายจ่ายทั้งหมด</p>
       </div>
-      <ErrorBoundary>
-        <Suspense fallback={<TransactionsListSkeleton />}>
-          <TransactionsList />
-        </Suspense>
-      </ErrorBoundary>
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <ErrorBoundary>
+          <Suspense fallback={<TransactionsListSkeleton />}>
+            <TransactionsList />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
     </div>
   );
 }

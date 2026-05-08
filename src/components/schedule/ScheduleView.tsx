@@ -328,11 +328,11 @@ export function ScheduleView({ searchParamsPromise }: ScheduleViewProps) {
   const rootFolders = foldersByParent.get("root") || [];
 
   return (
-    <div className="space-y-5 md:space-y-6">
-      <div className="responsive-actions justify-end">
+    <div className="flex h-full min-h-0 min-w-0 flex-col gap-2 sm:gap-5 md:gap-6">
+      <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
         <button
           onClick={() => createFolder()}
-          className="apple-ghost-button"
+          className="apple-ghost-button px-3 py-2 text-sm"
         >
           <FolderPlus className="h-4 w-4" />
           เพิ่มโฟลเดอร์
@@ -340,7 +340,7 @@ export function ScheduleView({ searchParamsPromise }: ScheduleViewProps) {
         <button
           onClick={() => setIsAddModalOpen(true)}
           disabled={data.scheduleFolders.length === 0}
-          className="apple-button px-4 py-2 text-sm disabled:opacity-50"
+          className="apple-button px-3 py-2 text-sm disabled:opacity-50"
         >
           <Plus className="h-4 w-4" />
           เพิ่มกำหนดการ
@@ -357,19 +357,28 @@ export function ScheduleView({ searchParamsPromise }: ScheduleViewProps) {
         />
       )}
 
-      <div className="space-y-3">
-        {rootFolders.length === 0 ? (
-          <div className="apple-card p-6 text-center text-muted">
-            ยังไม่มีโฟลเดอร์ — กดเพิ่มโฟลเดอร์เพื่อเริ่มจัดกลุ่มกำหนดการ
+      <div className="student-card-scroll min-h-0 flex-1 overflow-y-auto sm:pr-2">
+        <div className="grid min-h-0 gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(24rem,0.8fr)] xl:items-start">
+          <div className="order-2 space-y-2 sm:space-y-3 xl:order-1">
+            {rootFolders.length === 0 ? (
+              <div className="apple-card p-6 text-center text-muted">
+                ยังไม่มีโฟลเดอร์ — กดเพิ่มโฟลเดอร์เพื่อเริ่มจัดกลุ่มกำหนดการ
+              </div>
+            ) : (
+              rootFolders.map((folder) => renderFolder(folder))
+            )}
           </div>
-        ) : (
-          rootFolders.map((folder) => renderFolder(folder))
-        )}
-      </div>
 
-      <div className="apple-card p-4 sm:p-6">
-        <h2 className="mb-4 text-lg font-medium">ปฏิทินกำหนดการ</h2>
-        <ScheduleCalendar onScheduleClick={(schedule) => setSelectedSchedule(schedule)} />
+          <div className="apple-card order-1 p-3 sm:p-5 xl:sticky xl:top-0 xl:order-2">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-semibold sm:text-lg">ปฏิทินกำหนดการ</h2>
+                <p className="text-xs text-muted">เลือกวันเพื่อดูรายการและสถานะการเก็บเงิน</p>
+              </div>
+            </div>
+            <ScheduleCalendar onScheduleClick={(schedule) => setSelectedSchedule(schedule)} />
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -119,7 +119,7 @@ export function EditCategoryModal({ isOpen, onClose, category }: Props) {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Icon Preview */}
         <div className="flex flex-col items-center gap-3 border-b pb-4">
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 overflow-hidden">
+          <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900 dark:to-blue-900">
             {useCustomImage && customImagePreview ? (
               <img src={customImagePreview} alt="Custom icon" className="h-full w-full object-cover" />
             ) : (

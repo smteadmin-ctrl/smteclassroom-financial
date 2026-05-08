@@ -38,6 +38,31 @@ export async function deleteSchedule(id: string): Promise<void> {
   });
 }
 
+export type LineReminderResult = {
+  scheduleId: string;
+  sent: number;
+  skippedMissingLineId: number;
+  alreadyPaid: number;
+  failed: number;
+  recipients: Array<{
+    studentId: string;
+    studentName: string;
+    status: "sent" | "missing_line_id" | "already_paid" | "failed";
+    remaining: number;
+    error?: string;
+  }>;
+};
+
+export async function sendScheduleLineReminders(
+  scheduleId: string,
+  studentIds?: string[]
+): Promise<LineReminderResult> {
+  return apiRequest<LineReminderResult>(`/api/schedules/${scheduleId}/reminders/line`, {
+    method: "POST",
+    body: JSON.stringify({ studentIds }),
+  });
+}
+
 export async function getStudentsPaidForSchedule(scheduleId: string): Promise<string[]> {
   const transactions = await apiRequest<Array<{ student_id?: string }>>(
     `/api/transactions?scheduleId=${encodeURIComponent(scheduleId)}&source=schedule`
@@ -54,4 +79,3 @@ export async function getSchedulePaymentStatus(scheduleId: string): Promise<{
 }> {
   return apiRequest(`/api/schedules/${scheduleId}/status`);
 }
-

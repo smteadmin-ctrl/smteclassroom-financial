@@ -4,18 +4,18 @@
 :root {
   --background: #f6f7fb;
   --foreground: #101119;
-  --muted: #85889a;
-  --muted-strong: #5d6172;
+  --muted: #686d7f;
+  --muted-strong: #3f4454;
   --panel: rgba(255, 255, 255, 0.66);
   --panel-solid: #ffffff;
   --panel-soft: rgba(247, 248, 252, 0.86);
   --line: rgba(32, 35, 54, 0.10);
   --line-strong: rgba(32, 35, 54, 0.16);
-  --primary: #6253c6;
-  --primary-strong: #4f3fae;
-  --primary-soft: rgba(98, 83, 198, 0.13);
-  --pink: #e84d96;
-  --cyan: #42bfd2;
+  --primary: #2563eb;
+  --primary-strong: #1d4ed8;
+  --primary-soft: rgba(37, 99, 235, 0.13);
+  --pink: #38bdf8;
+  --cyan: #06b6d4;
   --success: #10a66a;
   --danger: #e34265;
   --warning: #d98a19;
@@ -39,9 +39,9 @@
   --panel-soft: rgba(21, 22, 31, 0.86);
   --line: rgba(255, 255, 255, 0.10);
   --line-strong: rgba(255, 255, 255, 0.17);
-  --primary: #9b8eff;
-  --primary-strong: #bbb3ff;
-  --primary-soft: rgba(155, 142, 255, 0.17);
+  --primary: #60a5fa;
+  --primary-strong: #93c5fd;
+  --primary-soft: rgba(96, 165, 250, 0.17);
   --shadow-soft: 0 26px 76px rgba(0, 0, 0, 0.32);
   --shadow-card: 0 18px 52px rgba(0, 0, 0, 0.28);
   --shadow-float: 0 34px 100px rgba(0, 0, 0, 0.46);
@@ -52,13 +52,14 @@
 }
 
 html {
+  height: 100%;
   background: var(--background);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 body {
-  min-height: 100dvh;
-  overflow-x: hidden;
+  height: 100dvh;
+  overflow: hidden;
   background: var(--background);
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Noto Sans Thai", sans-serif;
@@ -72,7 +73,7 @@ body {
   pointer-events: none;
   background:
     linear-gradient(120deg, color-mix(in srgb, var(--background) 86%, var(--cyan) 14%), transparent 42%),
-    linear-gradient(240deg, color-mix(in srgb, var(--background) 82%, var(--pink) 18%), transparent 46%),
+    linear-gradient(240deg, color-mix(in srgb, var(--background) 82%, var(--primary) 18%), transparent 46%),
     linear-gradient(180deg, var(--background), color-mix(in srgb, var(--background) 90%, var(--primary) 10%));
 }
 
@@ -95,7 +96,7 @@ body {
       transparent 38%,
       color-mix(in srgb, var(--primary) 24%, transparent) 52%,
       transparent 66%,
-      color-mix(in srgb, var(--pink) 20%, transparent) 78%,
+      color-mix(in srgb, var(--primary) 18%, transparent) 78%,
       transparent 100%);
   animation: ambientDrift 24s var(--ease-apple) infinite alternate;
 }
@@ -199,7 +200,7 @@ textarea::placeholder {
   justify-content: center;
   gap: 0.5rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 70%, var(--pink) 30%));
+  background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 62%, var(--cyan) 38%));
   color: white;
   font-weight: 650;
   box-shadow: 0 12px 28px color-mix(in srgb, var(--primary) 26%, transparent);
@@ -302,13 +303,13 @@ textarea::placeholder {
 
 .visual-gradient {
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--primary) 88%, #ffffff 12%), #6a58c9 44%, var(--pink));
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 88%, #ffffff 12%), #1d4ed8 46%, var(--cyan));
   background-size: 180% 180%;
   animation: gradientShift 18s var(--ease-apple) infinite alternate;
 }
 
 .text-muted {
-  color: var(--muted);
+  color: var(--muted-strong);
 }
 
 /* iOS notch safe areas for fixed headers/footers */
@@ -317,6 +318,11 @@ textarea::placeholder {
 }
 .safe-bottom {
   padding-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+
+.mobile-topbar {
+  min-height: calc(3.5rem + max(env(safe-area-inset-top), 0px));
+  padding-top: max(env(safe-area-inset-top), 0px);
 }
 
 .calendar-wrapper .react-calendar {
@@ -345,7 +351,7 @@ textarea::placeholder {
 }
 
 .calendar-wrapper .react-calendar__tile--now {
-  background-color: color-mix(in srgb, var(--pink) 12%, transparent);
+  background-color: color-mix(in srgb, var(--cyan) 12%, transparent);
 }
 
 .calendar-wrapper .react-calendar__month-view__days__day--weekend {
@@ -361,6 +367,8 @@ textarea::placeholder {
 
 .page-stack {
   width: 100%;
+  height: 100%;
+  min-height: 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -397,6 +405,64 @@ textarea::placeholder {
 .page-kicker {
   color: var(--muted);
   font-size: 0.875rem;
+}
+
+.fixed-page {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow: hidden;
+  animation: pageEnter 420ms var(--ease-apple) both;
+}
+
+.fixed-page-header {
+  flex: 0 0 auto;
+}
+
+.fixed-page-body {
+  min-height: 0;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+.student-card-scroll,
+.fixed-page-body,
+main,
+nav {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 34%, transparent) transparent;
+}
+
+.student-card-scroll::-webkit-scrollbar,
+.fixed-page-body::-webkit-scrollbar,
+main::-webkit-scrollbar,
+nav::-webkit-scrollbar {
+  width: 10px;
+}
+
+.student-card-scroll::-webkit-scrollbar-track,
+.fixed-page-body::-webkit-scrollbar-track,
+main::-webkit-scrollbar-track,
+nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.student-card-scroll::-webkit-scrollbar-thumb,
+.fixed-page-body::-webkit-scrollbar-thumb,
+main::-webkit-scrollbar-thumb,
+nav::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--primary) 28%, transparent);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
 }
 
 .polished-table {
@@ -443,16 +509,62 @@ textarea::placeholder {
 }
 
 @media (max-width: 480px) {
+  .apple-card,
+  .apple-panel {
+    border-radius: 20px;
+  }
+
+  .apple-button,
+  .apple-ghost-button {
+    min-height: 2.55rem;
+    padding-block: 0.55rem;
+  }
+
+  .apple-icon-button {
+    height: 2.35rem;
+    width: 2.35rem;
+    border-radius: 14px;
+  }
+
+  .fixed-page,
+  .page-stack {
+    gap: 0.75rem;
+  }
+
+  .fixed-page-header .section-title {
+    font-size: clamp(1.65rem, 7.4vw, 2rem);
+    line-height: 1.08;
+  }
+
+  .page-kicker {
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+
+  .fixed-page-body,
+  .student-card-scroll {
+    padding-right: 0;
+  }
+
+  .student-card-scroll::-webkit-scrollbar,
+  .fixed-page-body::-webkit-scrollbar {
+    width: 6px;
+  }
+
   .calendar-wrapper .react-calendar__tile {
-    padding: 10px 4px;
+    padding: 8px 3px;
     border-radius: 12px;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
   }
 
   .calendar-wrapper .react-calendar__navigation button {
     min-width: 36px;
-    padding: 9px 6px;
+    padding: 8px 5px;
     font-size: 0.8rem;
+  }
+
+  .calendar-wrapper .react-calendar__month-view__weekdays {
+    font-size: 0.72rem;
   }
 }
 
@@ -487,7 +599,7 @@ textarea::placeholder {
 .loader-square {
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, var(--primary), var(--pink));
+  background: linear-gradient(135deg, var(--primary), var(--cyan));
   border-radius: 18px;
   box-shadow: var(--shadow-float);
   animation: squareMorphRotate 1.2s var(--ease-apple) infinite;

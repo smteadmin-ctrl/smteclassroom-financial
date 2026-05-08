@@ -15,13 +15,13 @@ export function CategoriesGrid() {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 sm:gap-3 lg:grid-cols-3 2xl:grid-cols-4">
         {/* Add Category Card */}
         <motion.button
           onClick={() => setIsAddModalOpen(true)}
           whileHover={{ y: -3 }}
           whileTap={{ scale: 0.98 }}
-          className="apple-card flex min-h-36 flex-col items-center justify-center gap-3 border-2 border-dashed p-4 hover:shadow-xl sm:min-h-40"
+          className="apple-card flex min-h-32 flex-col items-center justify-center gap-2 border-2 border-dashed p-3 hover:shadow-xl sm:min-h-40 sm:gap-3 sm:p-4"
         >
           <div className="visual-gradient flex h-12 w-12 items-center justify-center rounded-2xl text-white">
             <Plus className="h-6 w-6" />
@@ -90,9 +90,9 @@ function CategoryCard({ category, onClick }: CategoryCardProps) {
       onClick={onClick}
       whileHover={{ y: -3 }}
       whileTap={{ scale: 0.98 }}
-      className="apple-card group relative flex min-h-36 min-w-0 flex-col items-center justify-center gap-3 p-4 transition-shadow hover:shadow-xl sm:min-h-40"
+      className="apple-card group relative flex min-h-32 min-w-0 flex-col items-center justify-center gap-2 p-3 transition-shadow hover:shadow-xl sm:min-h-40 sm:gap-3 sm:p-4"
     >
-      <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl" style={{ background: "var(--primary-soft)" }}>
+      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl sm:h-14 sm:w-14" style={{ background: "var(--primary-soft)" }}>
         {isCustomImage ? (
           <img src={category.icon as string} alt={category.name} className="h-full w-full object-cover" />
         ) : (
