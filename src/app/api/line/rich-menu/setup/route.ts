@@ -1,10 +1,12 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { badRequest, ok, serverError } from "@/lib/api/response";
 
-const RICH_MENU_SIZE = { width: 2500, height: 843 };
+const APP_URL = "https://classroom-finance-5.vercel.app";
+const RICH_MENU_IMAGE_PATH = join(process.cwd(), "public/line/rich-menu.png");
+const RICH_MENU_SIZE = { width: 1200, height: 405 };
 const MAX_RICH_MENU_IMAGE_BYTES = 1024 * 1024;
-const SUPPORTED_IMAGE_TYPES = new Set(["image/jpeg", "image/png"]);
-
-class RichMenuSetupError extends Error {}
+const RICH_MENU_IMAGE_CONTENT_TYPE = "image/png";
 
 type RichMenuImageResult =
   | { uploaded: true }
@@ -18,15 +20,7 @@ export async function POST() {
     if (!token) return badRequest("Missing LINE_CHANNEL_ACCESS_TOKEN");
 
     richMenuId = await createRichMenu(token);
-    const imageUrl = process.env.LINE_RICH_MENU_IMAGE_URL;
-    let imageResult: RichMenuImageResult = {
-      uploaded: false,
-      warning: "Add LINE_RICH_MENU_IMAGE_URL to upload a visual image.",
-    };
-
-    if (imageUrl) {
-      imageResult = await uploadRichMenuImage(token, richMenuId, imageUrl);
-    }
+    const imageResult = await uploadRichMenuImage(token, richMenuId);
 
     await setDefaultRichMenu(token, richMenuId);
 
@@ -36,11 +30,10 @@ export async function POST() {
       imageWarning: imageResult.uploaded ? undefined : imageResult.warning,
       note: imageResult.uploaded
         ? "Rich menu created and set as default."
-        : "Rich menu created and set as default. Upload a LINE image under 1 MB for the visual menu.",
+        : "Rich menu created and set as default. Check public/line/rich-menu.png for the visual menu image.",
     });
   } catch (error) {
     if (richMenuId) await deleteRichMenu(process.env.LINE_CHANNEL_ACCESS_TOKEN, richMenuId);
-    if (error instanceof RichMenuSetupError) return badRequest(error.message);
     return serverError(error);
   }
 }
@@ -59,7 +52,7 @@ async function createRichMenu(token: string) {
       chatBarText: "เมนูการเงิน",
       areas: [
         {
-          bounds: { x: 0, y: 0, width: 500, height: 843 },
+          bounds: { x: 0, y: 0, width: 240, height: 405 },
           action: {
             type: "message",
             label: "ชำระเงิน",
@@ -67,7 +60,7 @@ async function createRichMenu(token: string) {
           },
         },
         {
-          bounds: { x: 500, y: 0, width: 500, height: 843 },
+          bounds: { x: 240, y: 0, width: 240, height: 405 },
           action: {
             type: "message",
             label: "สถานะ",
@@ -75,7 +68,7 @@ async function createRichMenu(token: string) {
           },
         },
         {
-          bounds: { x: 1000, y: 0, width: 500, height: 843 },
+          bounds: { x: 480, y: 0, width: 240, height: 405 },
           action: {
             type: "message",
             label: "ประวัติ",
@@ -83,7 +76,7 @@ async function createRichMenu(token: string) {
           },
         },
         {
-          bounds: { x: 1500, y: 0, width: 500, height: 843 },
+          bounds: { x: 720, y: 0, width: 240, height: 405 },
           action: {
             type: "message",
             label: "ลงทะเบียน",
@@ -91,11 +84,11 @@ async function createRichMenu(token: string) {
           },
         },
         {
-          bounds: { x: 2000, y: 0, width: 500, height: 843 },
+          bounds: { x: 960, y: 0, width: 240, height: 405 },
           action: {
             type: "uri",
             label: "เว็บแอป",
-            uri: process.env.NEXT_PUBLIC_APP_URL || "https://classroom-finance-5.vercel.app",
+            uri: APP_URL,
           },
         },
       ],
@@ -108,28 +101,17 @@ async function createRichMenu(token: string) {
   return String(body.richMenuId);
 }
 
-async function uploadRichMenuImage(token: string, richMenuId: string, imageUrl: string): Promise<RichMenuImageResult> {
-  const image = await fetch(imageUrl);
-  if (!image.ok) throw new Error(`Failed to fetch rich menu image: ${image.status}`);
-  const contentType = normalizeImageContentType(image.headers.get("content-type"));
-  if (!SUPPORTED_IMAGE_TYPES.has(contentType)) {
+async function uploadRichMenuImage(token: string, richMenuId: string): Promise<RichMenuImageResult> {
+  let data: Buffer;
+  try {
+    data = await readFile(RICH_MENU_IMAGE_PATH);
+  } catch {
     return {
       uploaded: false,
-      warning: `Skipped rich menu image because LINE only accepts JPEG or PNG. The image URL returned "${contentType || "unknown"}".`,
+      warning: `Skipped rich menu image because ${RICH_MENU_IMAGE_PATH} was not found.`,
     };
   }
 
-  const contentLength = image.headers.get("content-length");
-  if (contentLength && Number(contentLength) > MAX_RICH_MENU_IMAGE_BYTES) {
-    return {
-      uploaded: false,
-      warning: `Skipped rich menu image because it is too large (${formatBytes(Number(contentLength))}). Use a JPEG or PNG under ${formatBytes(
-        MAX_RICH_MENU_IMAGE_BYTES
-      )}.`,
-    };
-  }
-
-  const data = await image.arrayBuffer();
   if (data.byteLength > MAX_RICH_MENU_IMAGE_BYTES) {
     return {
       uploaded: false,
@@ -139,13 +121,15 @@ async function uploadRichMenuImage(token: string, richMenuId: string, imageUrl: 
     };
   }
 
+  const imageBody = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
+
   const response = await fetch(`https://api-data.line.me/v2/bot/richmenu/${richMenuId}/content`, {
     method: "POST",
     headers: {
       authorization: `Bearer ${token}`,
-      "content-type": contentType,
+      "content-type": RICH_MENU_IMAGE_CONTENT_TYPE,
     },
-    body: data,
+    body: imageBody,
   });
 
   if (!response.ok) {
@@ -165,10 +149,6 @@ async function deleteRichMenu(token: string | undefined, richMenuId: string) {
       authorization: `Bearer ${token}`,
     },
   }).catch(() => null);
-}
-
-function normalizeImageContentType(contentType: string | null) {
-  return (contentType || "").split(";")[0].trim().toLowerCase();
 }
 
 function formatBytes(bytes: number) {
