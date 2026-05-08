@@ -1,6 +1,7 @@
 import { badRequest, notFound, ok, serverError } from "@/lib/api/response";
 import { createRecord, getRecord, updateRecord, type Row } from "@/lib/supabase/server";
 import { mapLinePaymentRequest, mapTransaction } from "@/lib/supabase/mappers";
+import { pushLineText } from "@/lib/server/line";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -49,8 +50,27 @@ export async function POST(_request: Request, context: RouteContext) {
       requestColumns
     );
 
-    return ok({ request: mapLinePaymentRequest(updated || row), transaction: mapTransaction(transaction) });
+    const notification = await pushLineText(paymentRequest.line_user_id, [
+      "ยืนยันการชำระเงินแล้ว",
+      `รายการ: ${String(schedule.name)}`,
+      `ยอดเงิน: ${paymentRequest.amount.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท`,
+      `ช่องทาง: ${formatMethod(method)}`,
+      "สถานะ: อนุมัติแล้ว",
+    ].join("\n"));
+
+    return ok({
+      request: mapLinePaymentRequest(updated || row),
+      transaction: mapTransaction(transaction),
+      notification,
+    });
   } catch (error) {
     return serverError(error);
   }
+}
+
+function formatMethod(method: string) {
+  if (method === "kplus") return "K PLUS";
+  if (method === "truemoney") return "TrueMoney";
+  if (method === "cash") return "เงินสด";
+  return method;
 }

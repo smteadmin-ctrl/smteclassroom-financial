@@ -181,7 +181,7 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-black/45 backdrop-blur-2xl"
+            className="fixed inset-0 z-50 bg-black/65 backdrop-blur-2xl"
           />
 
           {/* Modal */}
@@ -190,21 +190,21 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="apple-panel relative flex max-h-[min(760px,calc(100dvh-1.5rem))] w-full max-w-3xl flex-col overflow-hidden"
+              className="relative flex h-[min(820px,calc(100dvh-1.5rem))] w-full max-w-4xl flex-col overflow-hidden rounded-[28px] border bg-white shadow-2xl dark:bg-zinc-950"
+              style={{ borderColor: "var(--line)" }}
             >
               {/* Header */}
               <div
-                className="sticky top-0 z-10 shrink-0 border-b px-4 py-3 sm:px-6 sm:py-4"
+                className="z-10 shrink-0 border-b px-4 py-3 sm:px-6 sm:py-4"
                 style={{
                   borderColor: "var(--line)",
-                  background: "color-mix(in srgb, var(--panel-solid) 82%, transparent)",
-                  backdropFilter: "var(--blur-nav)",
+                  background: "var(--panel-solid)",
                 }}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h2 className="text-xl font-semibold">{schedule.name}</h2>
-                    <div className="mt-2 flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="truncate text-lg font-semibold sm:text-xl" title={schedule.name}>{schedule.name}</h2>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-600 dark:text-zinc-400 sm:text-sm">
                       <span>เริ่ม: {format(new Date(schedule.startDate), "dd/MM/yyyy")}</span>
                       {schedule.endDate && (
                         <>
@@ -229,7 +229,7 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                   </div>
 
                   {/* Action buttons */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
                     <button
                       onClick={() => handleSendReminder(unpaidStudentsWithLine.map((student) => student.id))}
                       disabled={unpaidStudentsWithLine.length === 0 || sendingReminder !== null}
@@ -264,39 +264,38 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                 </div>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto">
               {/* Summary Cards */}
-              <div className="border-b px-4 py-4 sm:px-6" style={{ borderColor: "var(--line)" }}>
-                <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
-                  <div className="rounded-xl border border-blue-200/60 bg-blue-50/80 p-4 dark:border-blue-500/20 dark:bg-blue-950/20">
-                    <div className="text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="shrink-0 border-b px-4 py-3 sm:px-6 sm:py-4" style={{ borderColor: "var(--line)", background: "var(--panel-solid)" }}>
+                <div className="grid gap-2 sm:grid-cols-3 sm:gap-3">
+                  <div className="rounded-2xl border border-blue-200/70 bg-blue-50/90 p-3 dark:border-blue-500/35 dark:bg-blue-950/35">
+                    <div className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
                       จำนวนต่อรายการ
                     </div>
-                    <div className="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    <div className="mt-1 text-xl font-bold text-blue-600 dark:text-blue-300 sm:text-2xl">
                       {schedule.amountPerItem.toLocaleString()} ฿
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-emerald-200/60 bg-emerald-50/80 p-4 dark:border-emerald-500/20 dark:bg-emerald-950/20">
-                    <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                  <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/90 p-3 dark:border-emerald-500/35 dark:bg-emerald-950/35">
+                    <div className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
                       เก็บได้
                     </div>
-                    <div className="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                    <div className="mt-1 text-xl font-bold text-emerald-600 dark:text-emerald-300 sm:text-2xl">
                       {totalCollected.toLocaleString()} ฿
                     </div>
-                    <div className="mt-1 text-xs text-zinc-500">
+                    <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
                       {paidCount}/{totalStudents} คน
                     </div>
                   </div>
 
-                  <div className="apple-soft rounded-xl p-4">
-                    <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                  <div className="rounded-2xl border border-rose-200/70 bg-rose-50/90 p-3 dark:border-rose-500/35 dark:bg-rose-950/25">
+                    <div className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
                       ยอดค้าง
                     </div>
-                    <div className="mt-1 text-2xl font-bold">
+                    <div className="mt-1 text-xl font-bold text-rose-600 dark:text-rose-300 sm:text-2xl">
                       {totalRemaining.toLocaleString()} ฿
                     </div>
-                    <div className="mt-1 text-xs text-zinc-500">
+                    <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
                       {unpaidCount} คนค้าง
                     </div>
                   </div>
@@ -375,12 +374,12 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
               )}
 
               {/* Student List */}
-              <div className="px-4 py-4 sm:px-6">
-                <div className="mb-3 flex items-center justify-between">
-                  <h3 className="font-medium">
+              <div className="flex min-h-0 flex-1 flex-col px-4 py-4 sm:px-6">
+                <div className="mb-3 flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <h3 className="font-semibold">
                     รายชื่อนักเรียน ({filteredStudents.length}/{scheduleStudents.length} คน)
                   </h3>
-                  <div className="flex gap-1">
+                  <div className="grid grid-cols-3 gap-1 rounded-full bg-zinc-100 p-1 dark:bg-zinc-900">
                     {[
                       { key: "all", label: "ทั้งหมด" },
                       { key: "paid", label: "ชำระแล้ว" },
@@ -389,9 +388,9 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                       <button
                         key={tab.key}
                         onClick={() => setStatusFilter(tab.key as typeof statusFilter)}
-                        className={`rounded-full px-3 py-1 text-xs transition-colors ${statusFilter === tab.key
+                        className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${statusFilter === tab.key
                             ? "bg-blue-600 text-white"
-                            : "bg-white/60 hover:bg-white dark:bg-zinc-800/70 dark:hover:bg-zinc-700"
+                            : "text-zinc-600 hover:bg-white dark:text-zinc-300 dark:hover:bg-zinc-800"
                           }`}
                       >
                         {tab.label}
@@ -399,7 +398,7 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                     ))}
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
                   {filteredStudents.length === 0 ? (
                     <div className="py-12 text-center text-zinc-500">
                       {statusFilter === "all" ? "ไม่มีนักเรียนในกำหนดการนี้" : statusFilter === "paid" ? "ยังไม่มีนักเรียนที่ชำระแล้ว" : "ไม่มีนักเรียนค้างชำระ"}
@@ -421,11 +420,11 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                               setQuickPayStudent({ scheduleId: schedule.id, studentId: student.id });
                             }
                           }}
-                          className={`flex items-center justify-between rounded-xl border p-3 transition-colors ${!hasPaid ? "cursor-pointer hover:bg-blue-50/80 dark:hover:bg-blue-950/20" : ""
+                          className={`flex flex-col gap-3 rounded-2xl border p-3 transition-colors sm:flex-row sm:items-center sm:justify-between ${!hasPaid ? "cursor-pointer hover:bg-blue-50/80 dark:hover:bg-blue-950/20" : ""
                             }`}
                           style={{ borderColor: "var(--line)" }}
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex min-w-0 items-center gap-3">
                             <div
                               className={`flex h-8 w-8 items-center justify-center rounded-full ${hasPaid
                                 ? "bg-emerald-100 dark:bg-emerald-950/30"
@@ -438,8 +437,8 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                                 <XIcon className="h-5 w-5 text-rose-600 dark:text-rose-400" />
                               )}
                             </div>
-                            <div>
-                              <div className="font-medium">
+                            <div className="min-w-0">
+                              <div className="truncate font-medium" title={`${student.prefix} ${student.firstName} ${student.lastName}`}>
                                 {student.prefix} {student.firstName} {student.lastName}
                               </div>
                               <div className="text-sm text-zinc-600 dark:text-zinc-400">
@@ -447,7 +446,7 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 text-right">
+                          <div className="flex shrink-0 items-center justify-between gap-2 text-right sm:justify-end">
                             {hasPaid ? (
                               <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">ชำระแล้ว</div>
                             ) : totalPaid > 0 ? (
@@ -485,7 +484,6 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                     })
                   )}
                 </div>
-              </div>
               </div>
             </motion.div>
           </div>

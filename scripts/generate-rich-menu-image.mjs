@@ -4,7 +4,7 @@ import { deflateSync } from "node:zlib";
 
 const width = 1200;
 const height = 405;
-const outputPath = join(process.cwd(), "public/line/rich-menu.png");
+const outputDir = join(process.cwd(), "public/line");
 
 const font = {
   A: ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
@@ -23,44 +23,51 @@ const font = {
   Y: ["10001", "10001", "01010", "00100", "00100", "00100", "00100"],
 };
 
-const panels = [
+const registeredPanels = [
   { label: "PAY", from: [10, 105, 225], to: [18, 168, 232] },
   { label: "STATUS", from: [12, 87, 197], to: [27, 136, 225] },
   { label: "HISTORY", from: [4, 120, 175], to: [14, 165, 210] },
-  { label: "REGISTER", from: [14, 128, 202], to: [45, 156, 219] },
-  { label: "WEB APP", from: [8, 83, 180], to: [37, 128, 211] },
+];
+const registerPanels = [
+  { label: "REGISTER", from: [10, 105, 225], to: [18, 168, 232] },
 ];
 
-const bytes = Buffer.alloc((width * 3 + 1) * height);
+writeMenuImage(join(outputDir, "rich-menu-registered.png"), registeredPanels);
+writeMenuImage(join(outputDir, "rich-menu-register.png"), registerPanels);
 
-for (let y = 0; y < height; y += 1) {
-  const rowStart = y * (width * 3 + 1);
-  bytes[rowStart] = 0;
-  for (let x = 0; x < width; x += 1) {
-    const panelIndex = Math.min(Math.floor(x / (width / panels.length)), panels.length - 1);
-    const panel = panels[panelIndex];
-    const localX = (x - panelIndex * (width / panels.length)) / (width / panels.length);
-    const localY = y / height;
-    const mix = Math.min(1, Math.max(0, localX * 0.55 + localY * 0.35));
-    const shade = y < 4 || x % 240 < 2 ? 0.72 : 1;
-    const r = Math.round((panel.from[0] * (1 - mix) + panel.to[0] * mix) * shade);
-    const g = Math.round((panel.from[1] * (1 - mix) + panel.to[1] * mix) * shade);
-    const b = Math.round((panel.from[2] * (1 - mix) + panel.to[2] * mix) * shade);
-    const pixelStart = rowStart + 1 + x * 3;
-    bytes[pixelStart] = r;
-    bytes[pixelStart + 1] = g;
-    bytes[pixelStart + 2] = b;
+function writeMenuImage(outputPath, panels) {
+  const panelWidth = width / panels.length;
+  const bytes = Buffer.alloc((width * 3 + 1) * height);
+
+  for (let y = 0; y < height; y += 1) {
+    const rowStart = y * (width * 3 + 1);
+    bytes[rowStart] = 0;
+    for (let x = 0; x < width; x += 1) {
+      const panelIndex = Math.min(Math.floor(x / panelWidth), panels.length - 1);
+      const panel = panels[panelIndex];
+      const localX = (x - panelIndex * panelWidth) / panelWidth;
+      const localY = y / height;
+      const mix = Math.min(1, Math.max(0, localX * 0.55 + localY * 0.35));
+      const shade = y < 4 || x % panelWidth < 2 ? 0.72 : 1;
+      const r = Math.round((panel.from[0] * (1 - mix) + panel.to[0] * mix) * shade);
+      const g = Math.round((panel.from[1] * (1 - mix) + panel.to[1] * mix) * shade);
+      const b = Math.round((panel.from[2] * (1 - mix) + panel.to[2] * mix) * shade);
+      const pixelStart = rowStart + 1 + x * 3;
+      bytes[pixelStart] = r;
+      bytes[pixelStart + 1] = g;
+      bytes[pixelStart + 2] = b;
+    }
   }
+
+  for (let i = 0; i < panels.length; i += 1) {
+    drawText(bytes, panels[i].label, i * panelWidth + panelWidth / 2, 198, 4, [255, 255, 255]);
+  }
+
+  mkdirSync(dirname(outputPath), { recursive: true });
+  writeFileSync(outputPath, encodePng(width, height, bytes));
 }
 
-for (let i = 0; i < panels.length; i += 1) {
-  drawText(panels[i].label, i * 240 + 120, 198, 4, [255, 255, 255]);
-}
-
-mkdirSync(dirname(outputPath), { recursive: true });
-writeFileSync(outputPath, encodePng(width, height, bytes));
-
-function drawText(text, centerX, centerY, scale, color) {
+function drawText(bytes, text, centerX, centerY, scale, color) {
   const chars = [...text];
   const glyphWidth = 5 * scale;
   const glyphGap = 2 * scale;
@@ -79,14 +86,14 @@ function drawText(text, centerX, centerY, scale, color) {
     for (let gy = 0; gy < glyph.length; gy += 1) {
       for (let gx = 0; gx < glyph[gy].length; gx += 1) {
         if (glyph[gy][gx] !== "1") continue;
-        fillRect(x + gx * scale, y + gy * scale, scale, scale, color);
+        fillRect(bytes, x + gx * scale, y + gy * scale, scale, scale, color);
       }
     }
     x += glyphWidth + glyphGap;
   }
 }
 
-function fillRect(x, y, rectWidth, rectHeight, color) {
+function fillRect(bytes, x, y, rectWidth, rectHeight, color) {
   for (let py = Math.max(0, y); py < Math.min(height, y + rectHeight); py += 1) {
     for (let px = Math.max(0, x); px < Math.min(width, x + rectWidth); px += 1) {
       const pixelStart = py * (width * 3 + 1) + 1 + px * 3;

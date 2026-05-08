@@ -4,8 +4,10 @@ import { badRequest, ok, serverError } from "@/lib/api/response";
 import { createRecord, listRecords, updateRecord, type Row } from "@/lib/supabase/server";
 import { mapLinePaymentRequest, mapSchedule, mapStudent, mapTransaction } from "@/lib/supabase/mappers";
 import { storePaymentProofImage } from "@/lib/server/paymentProofStorage";
+import { linkLineRichMenuByName } from "@/lib/server/line";
 
 const PROMPTPAY_ID = "004666006046829";
+const REGISTERED_RICH_MENU_NAME = "Classroom Finance Student Menu";
 
 type LineWebhookBody = {
   events?: LineWebhookEvent[];
@@ -141,6 +143,7 @@ async function handleAction(event: LineWebhookEvent, action: string) {
   );
 
   await updateRecord<Row>("students", student.id, { line_user_id: event.source.userId }, studentColumns);
+  await linkLineRichMenuByName(event.source.userId, REGISTERED_RICH_MENU_NAME);
 
   await replyLineText(event.replyToken, [
     "ลงทะเบียน LINE สำเร็จ",
