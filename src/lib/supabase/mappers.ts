@@ -1,5 +1,5 @@
 import { toNumber, type Row } from "./server";
-import type { Student, Schedule, ScheduleFolder, Transaction } from "@/types/supabase";
+import type { Student, Schedule, ScheduleFolder, Transaction, LinePaymentRequest } from "@/types/supabase";
 import type { Category } from "@/types/supabase-category";
 
 function toIso(value: unknown): string {
@@ -71,6 +71,24 @@ export function mapTransaction(row: Row): Transaction {
     pocket_id: row.pocket_id ? String(row.pocket_id) : undefined,
     source_pocket_id: row.source_pocket_id ? String(row.source_pocket_id) : undefined,
     destination_pocket_id: row.destination_pocket_id ? String(row.destination_pocket_id) : undefined,
+  };
+}
+
+export function mapLinePaymentRequest(row: Row): LinePaymentRequest {
+  return {
+    id: String(row.id),
+    line_user_id: String(row.line_user_id),
+    student_id: String(row.student_id),
+    schedule_id: String(row.schedule_id),
+    method: row.method ? (String(row.method) as LinePaymentRequest["method"]) : undefined,
+    amount: toNumber(row.amount),
+    status: String(row.status) as LinePaymentRequest["status"],
+    slip_url: row.slip_url ? String(row.slip_url) : undefined,
+    slip_pathname: row.slip_pathname ? String(row.slip_pathname) : undefined,
+    transaction_id: row.transaction_id ? String(row.transaction_id) : undefined,
+    note: row.note ? String(row.note) : undefined,
+    created_at: toIso(row.created_at),
+    updated_at: toIso(row.updated_at),
   };
 }
 

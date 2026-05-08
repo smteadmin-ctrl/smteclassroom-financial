@@ -2,8 +2,8 @@
  * Adapter to convert between UI types (camelCase) and database types (snake_case)
  */
 
-import type { Student as UIStudent, Schedule as UISchedule, ScheduleFolder as UIScheduleFolder, Transaction as UITransaction, Category as UICategory } from "@/types";
-import type { Student as DbStudent, Schedule as DbSchedule, ScheduleFolder as DbScheduleFolder, Transaction as DbTransaction } from "@/types/supabase";
+import type { Student as UIStudent, Schedule as UISchedule, ScheduleFolder as UIScheduleFolder, Transaction as UITransaction, Category as UICategory, LinePaymentRequest as UILinePaymentRequest } from "@/types";
+import type { Student as DbStudent, Schedule as DbSchedule, ScheduleFolder as DbScheduleFolder, Transaction as DbTransaction, LinePaymentRequest as DbLinePaymentRequest } from "@/types/supabase";
 import type { Category as DbCategory } from "@/types/supabase-category";
 
 // Student adapters
@@ -124,6 +124,24 @@ export function transactionToDbTransaction(
     pocket_id: transaction.pocketId,
     source_pocket_id: transaction.sourcePocketId,
     destination_pocket_id: transaction.destinationPocketId,
+  };
+}
+
+export function dbLinePaymentRequestToLinePaymentRequest(db: DbLinePaymentRequest): UILinePaymentRequest {
+  return {
+    id: db.id,
+    lineUserId: db.line_user_id,
+    studentId: db.student_id,
+    scheduleId: db.schedule_id,
+    method: db.method as UILinePaymentRequest["method"],
+    amount: db.amount,
+    status: db.status,
+    slipUrl: db.slip_url,
+    slipPathname: db.slip_pathname,
+    transactionId: db.transaction_id,
+    note: db.note,
+    createdAt: db.created_at,
+    updatedAt: db.updated_at,
   };
 }
 

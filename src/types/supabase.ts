@@ -58,11 +58,37 @@ export type Transaction = {
   destination_pocket_id?: string;
 };
 
+export type LinePaymentRequestStatus =
+  | "selecting"
+  | "awaiting_slip"
+  | "pending_review"
+  | "cash_pending"
+  | "approved"
+  | "rejected"
+  | "expired";
+
+export type LinePaymentRequest = {
+  id: string;
+  line_user_id: string;
+  student_id: string;
+  schedule_id: string;
+  method?: "kplus" | "cash" | "truemoney";
+  amount: number;
+  status: LinePaymentRequestStatus;
+  slip_url?: string;
+  slip_pathname?: string;
+  transaction_id?: string;
+  note?: string;
+  created_at: string;
+  updated_at: string;
+};
+
 // Input types (without auto-generated fields)
 export type StudentInput = Omit<Student, "id" | "created_at" | "updated_at">;
 export type ScheduleInput = Omit<Schedule, "id" | "created_at" | "updated_at">;
 export type ScheduleFolderInput = Omit<ScheduleFolder, "id" | "created_at" | "updated_at">;
 export type TransactionInput = Omit<Transaction, "id" | "created_at" | "updated_at">;
+export type LinePaymentRequestInput = Omit<LinePaymentRequest, "id" | "created_at" | "updated_at">;
 
 // Update types (partial without auto-generated fields)
 export type StudentUpdate = Partial<Omit<Student, "id" | "created_at" | "updated_at" | "nick_name" | "avatar_url" | "line_user_id">> & {
@@ -85,4 +111,11 @@ export type TransactionUpdate = Partial<Omit<Transaction, "id" | "created_at" | 
   pocket_id?: string | null;
   source_pocket_id?: string | null;
   destination_pocket_id?: string | null;
+};
+export type LinePaymentRequestUpdate = Partial<Omit<LinePaymentRequest, "id" | "created_at" | "updated_at" | "method" | "slip_url" | "slip_pathname" | "transaction_id" | "note">> & {
+  method?: LinePaymentRequest["method"] | null;
+  slip_url?: string | null;
+  slip_pathname?: string | null;
+  transaction_id?: string | null;
+  note?: string | null;
 };

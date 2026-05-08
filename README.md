@@ -1,273 +1,190 @@
-# Classroom Finance 5.0
+# Classroom Finance 5
 
-แอปพลิเคชันจัดการการเงินห้องเรียน - ระบบบริหารจัดการรายรับรายจ่ายและการเก็บเงินนักเรียนตามกำหนดการ
+ระบบการเงินห้องเรียนสำหรับจัดการรายรับ รายจ่าย กำหนดการเก็บเงิน นักเรียน และการแจ้งเตือนผ่าน LINE
 
-## ✨ Features
+## ภาพรวม
 
-### 📊 Dashboard
-- สรุปยอดคงเหลือรวม (รายรับ - รายจ่าย)
-- แยกรายรับจากธุรกรรมปกติและการเก็บนักเรียน
-- แสดงยอดรายจ่ายทั้งหมด
-- แยกการชำระตามวิธี (ธนาคาร/เงินสด/TrueMoney)
-- สถานะการชำระของนักเรียนตามกำหนดการ (ชำระแล้ว/ค้างชำระ)
-- แผนภูมิวงกลมตามหมวดหมู่ธุรกรรม (กรองตามเดือน)
-- Empty states สำหรับกรณีไม่มีข้อมูล
+โปรเจกต์นี้เป็นเว็บแอป Next.js สำหรับงานการเงินในห้องเรียน ใช้เก็บข้อมูลรายรับรายจ่าย ดูสถานะการชำระของนักเรียน และจัดการกำหนดการเก็บเงินแบบแยกโฟลเดอร์ พร้อมรองรับการแจ้งเตือนนักเรียนผ่าน LINE Messaging API
 
-### 💰 Transactions (รายการธุรกรรม)
-- แสดงรายการรายรับ/รายจ่ายทั้งหมด
-- สร้างธุรกรรมใหม่ (รายรับ/รายจ่าย, หมวดหมู่, วิธีชำระ)
-- แก้ไขและลบธุรกรรม
-- ค้นหาตามรายละเอียด
-- กรองตามประเภท (รายรับ/รายจ่าย) และเดือน
-- แสดงแหล่งที่มา: ธุรกรรมปกติ หรือ มาจากกำหนดการ
-- **จุดเด่น**: ธุรกรรมที่มาจากกำหนดการแก้ไขไม่ได้ (ป้องกันข้อมูลไม่ตรงกัน)
-- Empty states แยกระหว่าง "ไม่มีข้อมูล" กับ "ถูกกรองออก"
+## ฟีเจอร์หลัก
 
-### 📅 Schedule (กำหนดการ)
-- สร้างกำหนดการเก็บเงิน (ชื่อ, จำนวนเงิน, วันที่, นักเรียน)
-- แสดงแบบการ์ด carousel พร้อมสถานะชำระ
-- ปฏิทินแสดงกำหนดการ (react-calendar)
-- แก้ไขและลบกำหนดการ
-- **จุดเด่น**: สามารถเลือกนักเรียนที่ต้องชำระได้
-- Empty state สำหรับกรณียังไม่มีกำหนดการ
+### Dashboard
+- สรุปยอดคงเหลือรวม
+- แสดงรายรับ รายจ่าย และยอดจากกำหนดการ
+- แยกยอดตามวิธีชำระ
+- กราฟสรุปตามหมวดหมู่และตามเดือน
+- สถานะการชำระของนักเรียนแบบภาพรวม
 
-### 👥 Students (นักเรียน)
-- จัดการข้อมูลนักเรียน (เลขที่, คำนำหน้า, ชื่อ, นามสกุล, ชื่อเล่น)
-- อัปโหลดรูปโปรไฟล์ (Vercel Blob)
-- เรียงลำดับตามเลขที่หรือชื่อ
-- ดูรายละเอียดนักเรียน
-  - ประวัติการชำระ (กรองตาม ชำระแล้ว/ค้างชำระ)
-  - **Quick Pay**: ชำระค่างวดจากรายการค้างชำระได้ทันที (ตรวจสอบซ้ำอัตโนมัติ)
-- Empty state สำหรับกรณียังไม่มีนักเรียน
+### Transactions
+- เพิ่ม แก้ไข ลบ รายการเงิน
+- รองรับรายรับ รายจ่าย และโอนย้าย
+- กรองตามประเภท วิธีชำระ และคำค้นหา
+- แยกรายการที่มาจากกำหนดการกับธุรกรรมปกติ
+- ป้องกันการแก้ไขรายการจากกำหนดการเพื่อไม่ให้ข้อมูลคลาดเคลื่อน
 
-## 🛠 Tech Stack
+### Schedule
+- สร้างกำหนดการเก็บเงิน
+- จัดกลุ่มกำหนดการด้วยโฟลเดอร์
+- ปฏิทินแสดงกำหนดการและสถานะครบกำหนด
+- ดูรายการใกล้ครบกำหนดและรายการเลยกำหนด
+- เปิดรายละเอียดกำหนดการเพื่อดูนักเรียนที่ชำระแล้ว/ค้างชำระ
+- ส่งแจ้งเตือนผ่าน LINE ได้รายคนหรือแบบกลุ่มของกำหนดการนั้น
 
-### Frontend
-- **Next.js 16** (App Router, React Server Components, Turbopack)
-- **TypeScript** (strict mode)
-- **Tailwind CSS v4** (dark mode support)
-- **Framer Motion** (animations)
-- **Recharts** (data visualization)
-- **react-calendar** (calendar view)
-- **react-hook-form + Zod** (form validation)
+### Students
+- จัดการข้อมูลนักเรียน
+- อัปโหลดรูปโปรไฟล์ด้วย Vercel Blob
+- ดูรายละเอียดนักเรียนและสถานะกำหนดการ
+- ชำระรายการค้างจากหน้ารายละเอียดนักเรียนแบบ Quick Pay
+- บันทึก `LINE User ID` เพื่อใช้ส่งแจ้งเตือนอัตโนมัติ
 
-### State Management
-- **Zustand** (in-memory state, currently active)
-- **SWR** (data fetching)
+### LINE Notification
+- รับ webhook จาก LINE Messaging API
+- ลงทะเบียน `LINE User ID` ของนักเรียนจากข้อความที่ส่งเข้าบอท
+- ส่งแจ้งเตือนกำหนดการแบบ push ไปยังนักเรียนที่ยังค้างชำระ
 
-### Backend
-- **Supabase Postgres**
-  - Server-side access through Supabase service-role client
-  - Next.js API routes preserve the app's REST contract
-- **Vercel Blob**
-  - Student avatar and category icon storage
+## Tech Stack
 
-## 📁 Project Structure
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- Framer Motion
+- Recharts
+- react-calendar
+- react-hook-form
+- Zod
+- Zustand
+- Supabase Postgres
+- Vercel Blob
+- LINE Messaging API
 
-```
+## โครงสร้างโปรเจกต์
+
+```txt
 src/
-├── app/                      # Next.js App Router pages
-│   ├── dashboard/           # หน้า Dashboard
-│   ├── transactions/        # หน้า Transactions
-│   ├── schedule/            # หน้า Schedule
-│   └── students/            # หน้า Students
-├── components/              # React components
-│   ├── dashboard/          # Dashboard components
-│   ├── transactions/       # Transaction components + QuickPayModal
-│   ├── schedule/           # Schedule components + Calendar
-│   ├── students/           # Student components + StudentDetailModal
-│   ├── ui/                 # UI primitives (Modal, Button, Skeleton)
-│   └── ErrorBoundary.tsx   # Error handling
-├── lib/
-│   ├── calculations.ts     # Business logic (balance, summaries)
-│   ├── store.ts            # Zustand store (in-memory)
-│   ├── supabase/           # Database helpers and server Supabase utilities
-│   │   ├── students.ts     # Student CRUD (9 functions)
-│   │   ├── schedules.ts    # Schedule CRUD (9 functions)
-│   │   ├── transactions.ts # Transaction CRUD (11 functions)
-│   │   └── adapter.ts      # snake_case ↔ camelCase converter
-│   └── utils.ts            # Utilities (cn, date formatting)
-├── hooks/
-│   └── useSupabase.ts      # SWR hooks for database helpers (15+ hooks)
-└── types/
-    ├── index.ts            # UI types (camelCase)
-    └── supabase.ts         # Database row types (snake_case)
+├── app/                  # App Router pages และ API routes
+├── components/           # UI components และ modal ต่าง ๆ
+├── lib/                  # helpers, calculations, supabase, store
+├── types/                # types สำหรับ UI และฐานข้อมูล
+└── image/                # ไอคอน/ภาพประกอบของระบบ
+supabase/
+└── migrations/           # SQL migrations สำหรับ schema
+docs/                     # เอกสารอธิบายระบบและการใช้งาน
 ```
 
-## 🚀 Getting Started
+## การติดตั้งและรัน
 
-### Prerequisites
-- Node.js 18+
-- Supabase project
-- Supabase service role key
-- Vercel Blob store
+### 1) ติดตั้ง dependency
 
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd classroom-finance-5
-```
-
-2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
+### 2) ตั้งค่า environment
+
+คัดลอกจากตัวอย่างแล้วแก้ค่าให้ตรงกับโปรเจกต์ของคุณ
+
 ```bash
 cp .env.example .env.local
 ```
 
-Edit `.env.local`:
+ตัวแปรที่ใช้:
+
 ```env
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...
+LINE_CHANNEL_ACCESS_TOKEN=...
+LINE_CHANNEL_SECRET=...
+BLOB_READ_WRITE_TOKEN=...
 ```
 
-4. Run the SQL files in `supabase/migrations` in order from the Supabase SQL editor or CLI.
+### 3) รัน migration ของ Supabase
 
-5. Run development server:
+ให้รันไฟล์ SQL ใน `supabase/migrations` ตามลำดับใน Supabase SQL Editor หรือผ่าน Supabase CLI
+
+Migration ที่สำคัญ:
+- `001_initial_schema.sql`
+- `005_add_schedule_folders.sql`
+- `007_add_student_line_user_id.sql`
+
+### 4) เปิดโปรเจกต์
+
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001)
+เปิดที่:
 
-## 🗄️ Data Model
-
-### Supabase Tables
-
-Records keep the existing snake_case API row shape:
-
-```text
-students
-schedule_folders
-schedules
-categories
-transactions
+```txt
+http://localhost:3000
 ```
 
-### Calculation Rules
-```
-Balance = รายรับธุรกรรมปกติ + รายรับจากกำหนดการ - รายจ่ายทั้งหมด
-```
-
-## 🎨 Features Highlights
-
-### 1. Quick Pay Modal ✅
-- Pre-filled payment form from student detail
-- One-click payment for unpaid schedule items
-- Automatic duplicate detection
-- Toast notifications
-
-### 2. Edit Policy for Schedule Transactions ✅
-- Transactions created from schedules cannot be edited
-- Visual indicator with tooltip explaining why
-- Prevents data inconsistency
-
-### 3. Empty States ✅
-- Friendly messages when no data exists
-- Distinguishes "no data" vs "filtered out"
-- Actionable guidance (e.g., "Click 'Add' button to create")
-
-### 4. Loading Skeletons ✅
-- Professional loading states for all pages
-- Skeleton components for cards, tables, charts
-- Improved perceived performance
-
-### 5. Error Boundaries ✅
-- Graceful error handling without app crash
-- User-friendly error messages in Thai
-- Retry functionality
-
-## 🔄 Supabase Integration Status
-
-### ✅ Completed
-- Supabase server utilities implemented
-- Supabase-backed API routes implemented
-- Client CRUD helpers implemented
-- Vercel Blob upload/delete helpers implemented
-- 15+ SWR hooks retained
-- Adapter layer for field name conversion
-- Type safety with TypeScript
-
-## 📝 Development Notes
-
-### Adding a New Feature
-1. Create types in `/src/types/index.ts`
-2. Add database row types in `/src/types/supabase.ts`
-3. Create CRUD functions in `/src/lib/supabase/<resource>.ts`
-4. Add SWR hooks in `/src/hooks/useSupabase.ts`
-5. Create adapter functions in `/src/lib/supabase/adapter.ts`
-6. Build UI components in `/src/components/<feature>/`
-7. Add empty states and loading skeletons
-8. Wrap with ErrorBoundary
-
-### Code Style
-- Use TypeScript strict mode
-- Follow functional component pattern
-- Use Tailwind for styling
-- Dark mode support for all components
-- Thai language for user-facing text
-- Responsive design (mobile-first)
-
-## 🐛 Known Issues
-
-- Existing lint warnings remain in some UI components.
-
-## 🎯 Future Enhancements
-
-- [ ] Optimistic updates for better UX
-- [ ] Export to Excel/PDF
-- [ ] Multi-class support
-- [ ] Receipt printing
-- [ ] SMS notifications
-- [ ] Monthly reports
-- [ ] Authentication & authorization
-
-## 📄 License
-
-Internal classroom project.
-
-## 🙏 Acknowledgments
-
-Built with ❤️ for classroom financial management
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+## คำสั่งที่ใช้บ่อย
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm start
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## การใช้งาน LINE
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### webhook URL
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+เมื่อติดตั้งบน Vercel ให้ตั้ง webhook URL เป็น:
 
-## Learn More
+```txt
+https://classroom-finance-5.vercel.app/api/line/webhook
+```
 
-To learn more about Next.js, take a look at the following resources:
+### วิธีลงทะเบียน LINE User ID
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+นักเรียนส่งข้อความมาที่ LINE Official Account เช่น:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```txt
+ลงทะเบียน 24
+```
 
-## Deploy on Vercel
+หรือ:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```txt
+24
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+ระบบจะอ่าน `source.userId` จาก webhook แล้วบันทึกลงในข้อมูลนักเรียนอัตโนมัติ
+
+### ส่งแจ้งเตือนกำหนดการ
+
+จากหน้ารายละเอียดกำหนดการ กดปุ่มแจ้งเตือนเพื่อส่งข้อความไปยังนักเรียนที่ยังค้างชำระและมี `LINE User ID`
+
+## หมายเหตุสำคัญ
+
+- ต้องตั้งค่า Supabase schema ให้ตรงกับ migration ล่าสุดก่อนใช้งาน
+- ต้องมี `LINE_CHANNEL_ACCESS_TOKEN` และ `LINE_CHANNEL_SECRET` ที่ถูกต้อง
+- นักเรียนต้องกดเพิ่ม LINE Official Account ก่อน จึงจะส่ง push message ได้
+- ข้อมูลฝั่ง UI และฐานข้อมูลใช้คนละรูปแบบชื่อ field:
+  - UI ใช้ camelCase
+  - Supabase ใช้ snake_case
+
+## เอกสารเพิ่มเติม
+
+เอกสารที่มีอยู่ในโปรเจกต์อยู่ในโฟลเดอร์ `docs/` เช่น:
+- คู่มือการใช้งาน
+- คู่มือ Supabase
+- สรุปการติดตั้งและการพัฒนา
+
+## สถานะโปรเจกต์
+
+โปรเจกต์นี้พร้อมใช้งานกับ:
+- Dashboard
+- Transactions
+- Schedule
+- Students
+- Supabase
+- Vercel Blob
+- LINE notification
+
+## License
+
+ใช้ภายในงานห้องเรียน/โปรเจกต์ภายในองค์กร

@@ -1,12 +1,14 @@
 "use client";
-import { useState, useMemo } from "react";
-import { X, Edit, Trash2, Check, XIcon, Bell, MessageCircleWarning } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { X, Edit, Trash2, Check, XIcon, Bell, MessageCircleWarning, ReceiptText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, differenceInDays } from "date-fns";
 import { useAppStore } from "@/lib/store";
 import { deleteSchedule as deleteScheduleRemote } from "@/lib/supabase/schedules";
 import { sendScheduleLineReminders } from "@/lib/supabase/schedules";
-import type { Schedule } from "@/types";
+import { approveLinePaymentRequest, getLinePaymentRequests, updateLinePaymentRequest } from "@/lib/supabase/linePaymentRequests";
+import { dbTransactionToTransaction, dbLinePaymentRequestToLinePaymentRequest } from "@/lib/supabase/adapter";
+import type { LinePaymentRequest, Schedule } from "@/types";
 import { toast } from "react-hot-toast";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { EditScheduleModal } from "./EditScheduleModal";
@@ -22,11 +24,14 @@ type ScheduleDetailModalProps = {
 export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFilter }: ScheduleDetailModalProps) {
   const data = useAppStore((state) => state.data);
   const deleteSchedule = useAppStore((state) => state.deleteSchedule);
+  const addTransaction = useAppStore((state) => state.addTransaction);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; name: string } | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [quickPayStudent, setQuickPayStudent] = useState<{ scheduleId: string; studentId: string } | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | "paid" | "unpaid">(initialStatusFilter || "all");
   const [sendingReminder, setSendingReminder] = useState<"all" | string | null>(null);
+  const [lineRequests, setLineRequests] = useState<LinePaymentRequest[]>([]);
+  const [reviewingRequestId, setReviewingRequestId] = useState<string | null>(null);
 
   // Get students for this schedule
   const scheduleStudents = data.students
@@ -80,6 +85,25 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
   const daysLeft = schedule.endDate
     ? differenceInDays(new Date(schedule.endDate), new Date())
     : null;
+  const pendingRequests = lineRequests.filter((request) => ["pending_review", "cash_pending"].includes(request.status));
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+
+    getLinePaymentRequests({ scheduleId: schedule.id, status: "pending_review,cash_pending" })
+      .then((requests) => {
+        if (!cancelled) setLineRequests(requests.map(dbLinePaymentRequestToLinePaymentRequest));
+      })
+      .catch((error) => {
+        console.error(error);
+        if (!cancelled) toast.error("โหลดรายการรอตรวจสอบไม่สำเร็จ");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, schedule.id]);
 
   const handleDelete = async () => {
     try {
@@ -117,6 +141,33 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
       toast.error(error instanceof Error ? error.message : "ส่งแจ้งเตือนไม่สำเร็จ");
     } finally {
       setSendingReminder(null);
+    }
+  };
+
+  const handleApproveRequest = async (requestId: string) => {
+    setReviewingRequestId(requestId);
+    try {
+      const result = await approveLinePaymentRequest(requestId);
+      if (result.transaction) addTransaction(dbTransactionToTransaction(result.transaction));
+      setLineRequests((requests) => requests.filter((request) => request.id !== requestId));
+      toast.success("อนุมัติและบันทึกชำระเงินแล้ว");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "อนุมัติไม่สำเร็จ");
+    } finally {
+      setReviewingRequestId(null);
+    }
+  };
+
+  const handleRejectRequest = async (requestId: string) => {
+    setReviewingRequestId(requestId);
+    try {
+      await updateLinePaymentRequest(requestId, { status: "rejected", note: "Rejected by treasurer" });
+      setLineRequests((requests) => requests.filter((request) => request.id !== requestId));
+      toast.success("ปฏิเสธรายการแล้ว");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "ปฏิเสธไม่สำเร็จ");
+    } finally {
+      setReviewingRequestId(null);
     }
   };
 
@@ -269,6 +320,59 @@ export function ScheduleDetailModal({ isOpen, onClose, schedule, initialStatusFi
                   </button>
                 </div>
               </div>
+
+              {pendingRequests.length > 0 && (
+                <div className="border-b px-4 py-4 sm:px-6" style={{ borderColor: "var(--line)" }}>
+                  <div className="mb-3 flex items-center gap-2">
+                    <ReceiptText className="h-4 w-4 text-blue-600" />
+                    <h3 className="font-medium">รายการจาก LINE รอตรวจสอบ ({pendingRequests.length})</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {pendingRequests.map((request) => {
+                      const student = data.students.find((item) => item.id === request.studentId);
+                      return (
+                        <div key={request.id} className="rounded-2xl border p-3" style={{ borderColor: "var(--line)", background: "var(--panel-soft)" }}>
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="min-w-0">
+                              <div className="font-semibold">
+                                {student ? `${student.prefix} ${student.firstName} ${student.lastName}` : "ไม่พบนักเรียน"}
+                              </div>
+                              <div className="text-sm text-muted">
+                                {request.method === "cash" ? "เงินสด" : request.method === "truemoney" ? "TrueMoney" : "K PLUS"} • {request.amount.toLocaleString()} ฿
+                                <span className="mx-1">•</span>
+                                {request.status === "cash_pending" ? "รอรับเงินสด" : "รอตรวจสลิป"}
+                              </div>
+                              {request.slipUrl && (
+                                <a href={request.slipUrl} target="_blank" rel="noreferrer" className="mt-1 inline-flex text-sm font-medium text-blue-600 hover:underline">
+                                  เปิดดูสลิป
+                                </a>
+                              )}
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 sm:flex">
+                              <button
+                                type="button"
+                                onClick={() => handleRejectRequest(request.id)}
+                                disabled={reviewingRequestId !== null}
+                                className="apple-ghost-button justify-center px-3 py-2 text-sm disabled:opacity-45"
+                              >
+                                ปฏิเสธ
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleApproveRequest(request.id)}
+                                disabled={reviewingRequestId !== null}
+                                className="apple-button justify-center px-3 py-2 text-sm disabled:opacity-45"
+                              >
+                                อนุมัติ
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Student List */}
               <div className="px-4 py-4 sm:px-6">

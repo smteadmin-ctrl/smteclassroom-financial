@@ -1,6 +1,14 @@
 export type PaymentMethod = "kplus" | "cash" | "truemoney";
 export type TxnKind = "income" | "expense" | "transfer";
 export type TxnSource = "transaction" | "schedule";
+export type LinePaymentRequestStatus =
+  | "selecting"
+  | "awaiting_slip"
+  | "pending_review"
+  | "cash_pending"
+  | "approved"
+  | "rejected"
+  | "expired";
 
 export interface Pocket {
   id: string;
@@ -63,11 +71,28 @@ export interface Transaction {
   destinationPocketId?: string; // สำหรับการโอน: ไปกระเป๋าไหน
 }
 
+export interface LinePaymentRequest {
+  id: string;
+  lineUserId: string;
+  studentId: string;
+  scheduleId: string;
+  method?: PaymentMethod;
+  amount: number;
+  status: LinePaymentRequestStatus;
+  slipUrl?: string;
+  slipPathname?: string;
+  transactionId?: string;
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface DataBundle {
   students: Student[];
   schedules: Schedule[];
   scheduleFolders: ScheduleFolder[];
   transactions: Transaction[];
+  linePaymentRequests?: LinePaymentRequest[];
   categories: Category[];
   pockets: Pocket[];
 }
