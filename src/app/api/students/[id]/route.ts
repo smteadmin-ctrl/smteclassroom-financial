@@ -1,6 +1,7 @@
 import { noContent, notFound, ok, serverError } from "@/lib/api/response";
 import { deleteRecord, getRecord, listRecords, updateRecord, type Row } from "@/lib/supabase/server";
 import { mapStudent } from "@/lib/supabase/mappers";
+import { unlinkLineRichMenu } from "@/lib/server/line";
 import type { StudentUpdate } from "@/types/supabase";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -22,8 +23,12 @@ export async function PATCH(request: Request, context: RouteContext) {
   try {
     const { id } = await context.params;
     const body = (await request.json()) as StudentUpdate;
+    const previous = await getRecord<Row>("students", id);
     const row = await updateRecord<Row>("students", id, body, studentColumns);
     if (!row) return notFound("Student not found");
+    if (body.line_user_id === null && previous?.line_user_id) {
+      await unlinkLineRichMenu(String(previous.line_user_id));
+    }
     return ok(mapStudent(row));
   } catch (error) {
     return serverError(error);

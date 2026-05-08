@@ -7,7 +7,6 @@ import { filterTransactions } from "@/lib/calculations";
 import { TxnSource, TxnKind, PaymentMethod, Transaction } from "@/types";
 import { format } from "date-fns";
 import { AddTransactionModal } from "./AddTransactionModal";
-import { EditTransactionModal } from "./EditTransactionModal";
 import { TransactionDetailModal } from "./TransactionDetailModal";
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -463,14 +462,7 @@ export function TransactionsList() {
       )}
 
       {/* Detail / Edit Modal */}
-      {selectedTransaction && selectedTransaction.source === "transaction" && (
-        <EditTransactionModal
-          isOpen={!!selectedTransaction}
-          onClose={() => setSelectedTransaction(null)}
-          transaction={selectedTransaction}
-        />
-      )}
-      {selectedTransaction && selectedTransaction.source === "schedule" && (
+      {selectedTransaction && (
         <TransactionDetailModal
           isOpen={!!selectedTransaction}
           onClose={() => setSelectedTransaction(null)}

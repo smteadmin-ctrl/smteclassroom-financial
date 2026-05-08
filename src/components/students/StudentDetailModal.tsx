@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, User, Edit2, Trash2, ImageOff } from "lucide-react";
+import { X, User, Edit2, Trash2, ImageOff, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
@@ -10,6 +10,7 @@ import { getFolderPath, getSchedulesInSystemOrder } from "@/lib/schedules/groupi
 import type { Student } from "@/types";
 import { EditStudentModal } from "./EditStudentModal";
 import { QuickPayModal } from "../transactions/QuickPayModal";
+import { EditTransactionModal } from "../transactions/EditTransactionModal";
 import {
   deleteStudent as deleteStudentRemote,
   deleteStudentAvatar,
@@ -28,6 +29,7 @@ type TabType = "paid" | "unpaid";
 export function StudentDetailModal({ isOpen, onClose, student: initialStudent }: StudentDetailModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>("unpaid");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null);
   const [quickPayScheduleId, setQuickPayScheduleId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeletingAvatar, setIsDeletingAvatar] = useState(false);
@@ -148,6 +150,9 @@ export function StudentDetailModal({ isOpen, onClose, student: initialStudent }:
       date: t.createdAt,
     };
   });
+  const editingTransaction = editingTransactionId
+    ? data.transactions.find((transaction) => transaction.id === editingTransactionId)
+    : null;
 
   // Unpaid schedules
   const unpaidItems = unpaidSchedules.map((sch) => ({
@@ -405,8 +410,19 @@ export function StudentDetailModal({ isOpen, onClose, student: initialStudent }:
                               )}
                             </div>
                           </div>
-                          <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
-                            {item.amount.toLocaleString()} ฿
+                          <div className="flex shrink-0 items-center justify-between gap-3 sm:justify-end">
+                            <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+                              {item.amount.toLocaleString()} ฿
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setEditingTransactionId(item.id)}
+                              className="apple-icon-button h-9 w-9 rounded-xl"
+                              aria-label="แก้ไขรายการชำระเงิน"
+                              title="แก้ไขรายการชำระเงิน"
+                            >
+                              <Pencil className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                            </button>
                           </div>
                         </motion.div>
                       ))
@@ -430,6 +446,13 @@ export function StudentDetailModal({ isOpen, onClose, student: initialStudent }:
               onClose={() => setQuickPayScheduleId(null)}
               scheduleId={quickPayScheduleId}
               studentId={student.id}
+            />
+          )}
+          {editingTransaction && (
+            <EditTransactionModal
+              isOpen={!!editingTransaction}
+              onClose={() => setEditingTransactionId(null)}
+              transaction={editingTransaction}
             />
           )}
         </>

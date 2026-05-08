@@ -83,6 +83,10 @@ async function handleLineEvent(event: LineWebhookEvent) {
     await showPayMenu(event);
     return;
   }
+  if (isCancelCommand(text)) {
+    await cancelActivePayment(event);
+    return;
+  }
 
   await handleAction(event, text);
 }
@@ -156,7 +160,7 @@ async function handleAction(event: LineWebhookEvent, action: string) {
 async function showPayMenu(event: LineWebhookEvent) {
   const student = await getStudentByLineUserId(event.source?.userId);
   if (!student) {
-    await replyLineText(event.replyToken, "กรุณาลงทะเบียนก่อนใช้งาน\nตัวอย่าง: ลงทะเบียน 24");
+    await replyLineText(event.replyToken, "กรุณากดเมนูลงทะเบียนหรือพิมพ์เลขที่ของตัวเอง เช่น ลงทะเบียน 24");
     return;
   }
 
@@ -171,15 +175,18 @@ async function showPayMenu(event: LineWebhookEvent) {
       type: "text",
       text: "เลือกรายการที่ต้องการชำระ",
       quickReply: {
-        items: debts.slice(0, 13).map(({ schedule, remaining }) => ({
-          type: "action",
-          action: {
-            type: "postback",
-            label: truncateLabel(`${schedule.name} ${remaining.toLocaleString()}฿`, 20),
-            data: `pay:schedule:${schedule.id}`,
-            displayText: `ชำระ ${schedule.name}`,
-          },
-        })),
+        items: [
+          ...debts.slice(0, 12).map(({ schedule, remaining }) => ({
+            type: "action",
+            action: {
+              type: "postback",
+              label: truncateLabel(`${schedule.name} ${remaining.toLocaleString()}฿`, 20),
+              data: `pay:schedule:${schedule.id}`,
+              displayText: `ชำระ ${schedule.name}`,
+            },
+          })),
+          quickMessage("ยกเลิก", "ยกเลิก"),
+        ],
       },
     },
   ]);
@@ -232,6 +239,7 @@ async function handleScheduleSelection(event: LineWebhookEvent, scheduleId: stri
           quickPostback("K PLUS", `pay:method:${request.id}:kplus`),
           quickPostback("TrueMoney", `pay:method:${request.id}:truemoney`),
           quickPostback("เงินสด", `pay:method:${request.id}:cash`),
+          quickMessage("ยกเลิก", "ยกเลิก"),
         ],
       },
     },
@@ -320,6 +328,25 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
   await replyLineText(event.replyToken, "ได้รับสลิปแล้ว รอเหรัญญิกตรวจสอบและยืนยันในระบบ");
 }
 
+async function cancelActivePayment(event: LineWebhookEvent) {
+  const activeRequests = (await listRecords<Row>("line_payment_requests"))
+    .map(mapLinePaymentRequest)
+    .filter((request) =>
+      request.line_user_id === event.source?.userId &&
+      ["selecting", "awaiting_slip", "cash_pending"].includes(request.status)
+    );
+
+  if (activeRequests.length === 0) {
+    await replyLineText(event.replyToken, "ไม่มีรายการชำระเงินที่กำลังดำเนินการอยู่");
+    return;
+  }
+
+  await Promise.all(activeRequests.map((request) =>
+    updateRecord<Row>("line_payment_requests", request.id, { status: "expired", note: "Cancelled by LINE user" }, ["status", "note"])
+  ));
+  await replyLineText(event.replyToken, "ยกเลิกรายการชำระเงินแล้ว");
+}
+
 function parseRegistrationNumber(text: string) {
   const normalized = text.replace(/\s+/g, " ").trim();
   const match = normalized.match(/^(?:ลงทะเบียน|register)?\s*(\d{1,3})$/i);
@@ -330,6 +357,10 @@ function parseRegistrationNumber(text: string) {
 
 function isPayCommand(text: string) {
   return ["ชำระเงิน", "จ่ายเงิน", "pay", "PAY_MENU"].includes(text.trim());
+}
+
+function isCancelCommand(text: string) {
+  return ["ยกเลิก", "cancel", "CANCEL_PAYMENT"].includes(text.trim());
 }
 
 function isRegistrationHelpCommand(text: string) {
@@ -377,6 +408,17 @@ function quickPostback(label: string, data: string) {
       label,
       data,
       displayText: label,
+    },
+  };
+}
+
+function quickMessage(label: string, text: string) {
+  return {
+    type: "action",
+    action: {
+      type: "message",
+      label,
+      text,
     },
   };
 }

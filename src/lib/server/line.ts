@@ -70,3 +70,22 @@ export async function linkLineRichMenuByName(lineUserId: string | undefined, ric
 
   return linkLineRichMenu(lineUserId, String(menu.richMenuId));
 }
+
+export async function unlinkLineRichMenu(lineUserId: string | undefined) {
+  const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+  if (!token || !lineUserId) return { ok: false, error: "Missing LINE token or user id" };
+
+  const response = await fetch(`https://api.line.me/v2/bot/user/${lineUserId}/richmenu`, {
+    method: "DELETE",
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => "");
+    return { ok: false, error: `LINE unlink rich menu API ${response.status}${body ? `: ${body}` : ""}` };
+  }
+
+  return { ok: true };
+}
