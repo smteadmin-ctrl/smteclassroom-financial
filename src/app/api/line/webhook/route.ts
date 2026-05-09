@@ -8,6 +8,7 @@ import { linkLineRichMenuByName } from "@/lib/server/line";
 
 const PROMPTPAY_ID = "004666006046829";
 const REGISTERED_RICH_MENU_NAME = "Classroom Finance Student Menu";
+const REGISTER_RICH_MENU_NAME = "Classroom Finance Register Menu";
 
 type LineWebhookBody = {
   events?: LineWebhookEvent[];
@@ -98,6 +99,19 @@ async function handleAction(event: LineWebhookEvent, action: string) {
 
   if (!number) {
     if (isRegistrationHelpCommand(normalized)) {
+      const registeredStudent = await getStudentByLineUserId(event.source.userId);
+      if (registeredStudent) {
+        await linkLineRichMenuByName(event.source.userId, REGISTERED_RICH_MENU_NAME);
+        await replyLineText(event.replyToken, [
+          "บัญชี LINE นี้ลงทะเบียนแล้ว",
+          `${registeredStudent.prefix} ${registeredStudent.first_name} ${registeredStudent.last_name}`,
+          `เลขที่ ${registeredStudent.number}`,
+          "ถ้าต้องการเปลี่ยนคน ให้เหรัญญิกลบ LINE User ID ในระบบก่อน",
+        ].join("\n"));
+        return;
+      }
+
+      await linkLineRichMenuByName(event.source.userId, REGISTER_RICH_MENU_NAME);
       await replyLineText(event.replyToken, [
         "ลงทะเบียนบัญชี LINE กับระบบการเงินห้องเรียน",
         "พิมพ์เลขที่ของตัวเอง เช่น ลงทะเบียน 24",
@@ -132,6 +146,20 @@ async function handleAction(event: LineWebhookEvent, action: string) {
 
   const studentRows = await listRecords<Row>("students");
   const students = studentRows.map(mapStudent);
+  const registeredStudent = students.find((item) => item.line_user_id === event.source?.userId);
+  if (registeredStudent) {
+    await linkLineRichMenuByName(event.source.userId, REGISTERED_RICH_MENU_NAME);
+    await replyLineText(event.replyToken, [
+      "บัญชี LINE นี้ลงทะเบียนแล้ว",
+      `${registeredStudent.prefix} ${registeredStudent.first_name} ${registeredStudent.last_name}`,
+      `เลขที่ ${registeredStudent.number}`,
+      registeredStudent.number === number
+        ? "ไม่ต้องลงทะเบียนซ้ำ สามารถกดเมนูชำระเงินได้เลย"
+        : "ไม่สามารถลงทะเบียนซ้ำเป็นนักเรียนคนอื่นได้ ถ้าต้องการเปลี่ยนให้เหรัญญิกลบ LINE User ID ในระบบก่อน",
+    ].join("\n"));
+    return;
+  }
+
   const student = students.find((item) => item.number === number);
 
   if (!student) {
@@ -139,12 +167,13 @@ async function handleAction(event: LineWebhookEvent, action: string) {
     return;
   }
 
-  const duplicateStudents = students.filter((item) => item.line_user_id === event.source?.userId && item.id !== student.id);
-  await Promise.all(
-    duplicateStudents.map((duplicate) =>
-      updateRecord<Row>("students", duplicate.id, { line_user_id: null }, studentColumns)
-    )
-  );
+  if (student.line_user_id && student.line_user_id !== event.source.userId) {
+    await replyLineText(event.replyToken, [
+      `เลขที่ ${student.number} มีบัญชี LINE ที่ลงทะเบียนอยู่แล้ว`,
+      "ถ้าต้องการเปลี่ยนบัญชี ให้เหรัญญิกลบ LINE User ID ของนักเรียนคนนี้ในระบบก่อน",
+    ].join("\n"));
+    return;
+  }
 
   await updateRecord<Row>("students", student.id, { line_user_id: event.source.userId }, studentColumns);
   await linkLineRichMenuByName(event.source.userId, REGISTERED_RICH_MENU_NAME);
