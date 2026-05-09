@@ -328,7 +328,7 @@ async function handleScheduleSelection(event: LineWebhookEvent, scheduleId: stri
       request.line_user_id === event.source?.userId &&
       request.student_id === student.id &&
       request.schedule_id === scheduleId &&
-      ["selecting", "awaiting_slip", "pending_review", "cash_pending"].includes(request.status)
+      ["selecting", "awaiting_slip"].includes(request.status)
     );
 
   await Promise.all(existingRequests.map((request) =>

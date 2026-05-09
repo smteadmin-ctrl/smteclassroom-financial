@@ -1,7 +1,8 @@
 import { badRequest, notFound, ok, serverError } from "@/lib/api/response";
-import { createRecord, getRecord, updateRecord, type Row } from "@/lib/supabase/server";
+import { createRecord, getRecord, listRecords, updateRecord, type Row } from "@/lib/supabase/server";
 import { mapLinePaymentRequest, mapTransaction } from "@/lib/supabase/mappers";
 import { pushLineText } from "@/lib/server/line";
+import { del } from "@vercel/blob";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -50,6 +51,31 @@ export async function POST(_request: Request, context: RouteContext) {
       requestColumns
     );
 
+    // Instant slip deletion
+    if (paymentRequest.slip_pathname) {
+      try {
+        await del(paymentRequest.slip_pathname);
+        await updateRecord<Row>("line_payment_requests", id, { slip_url: null, slip_pathname: null }, ["slip_url", "slip_pathname"]);
+      } catch (err) {
+        console.error("Failed to delete slip:", err);
+      }
+    }
+
+    // Calculate remaining balance
+    const allTransactions = await listRecords<Row>("transactions");
+    const studentPaid = allTransactions
+      .filter((t) => t.student_id === paymentRequest.student_id && t.schedule_id === paymentRequest.schedule_id && t.kind === "income")
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+    const scheduleAmount = Number(schedule.amount_per_item);
+    const remain = Math.max(0, scheduleAmount - studentPaid);
+
+    let remainText = "";
+    if (remain > 0) {
+      remainText = `เหลือยอดค้างชำระ: ${remain.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท`;
+    } else {
+      remainText = "ยอดค้างชำระ: ชำระครบแล้ว 🎉";
+    }
+
     const notification = await pushLineText(paymentRequest.line_user_id, [
       "ยืนยันการชำระเงินเรียบร้อยแล้วครับ ✅",
       "ภารกิจจ่ายเงินสำเร็จ",
@@ -58,6 +84,8 @@ export async function POST(_request: Request, context: RouteContext) {
       `ยอดเงิน: ${paymentRequest.amount.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท`,
       `ช่องทาง: ${formatMethod(method)}`,
       "สถานะ: อนุมัติแล้ว",
+      "",
+      remainText,
       "",
       "ขอบคุณที่ชำระเงินครับ 🙏",
     ].join("\n"));
