@@ -7,6 +7,29 @@ import { storePaymentProofImage } from "@/lib/server/paymentProofStorage";
 import { linkLineRichMenuByName } from "@/lib/server/line";
 
 const PROMPTPAY_ID = "004666006046829";
+
+const TRUEMONEY_TEMPLATE_PREFIX = "00020101021229390016A000000677010111031514000098913543353037645";
+const TRUEMONEY_TEMPLATE_SUFFIX = "5802TH6304";
+
+function crc16CcittFalse(data: string): string {
+  let crc = 0xFFFF;
+  for (let i = 0; i < data.length; i++) {
+    crc ^= data.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
+      crc &= 0xFFFF;
+    }
+  }
+  return crc.toString(16).toUpperCase().padStart(4, "0");
+}
+
+function generateTrueMoneyPayload(amount: number): string {
+  const amountStr = amount.toFixed(2);
+  const amountLength = amountStr.length.toString().padStart(2, "0");
+  const dataWithoutCrc = `${TRUEMONEY_TEMPLATE_PREFIX}4${amountLength}${amountStr}${TRUEMONEY_TEMPLATE_SUFFIX}`;
+  const crc = crc16CcittFalse(dataWithoutCrc);
+  return `${dataWithoutCrc}${crc}`;
+}
 const REGISTERED_RICH_MENU_NAME = "Classroom Finance Student Menu";
 const REGISTER_RICH_MENU_NAME = "Classroom Finance Register Menu";
 
@@ -104,6 +127,18 @@ async function handleLineEvent(event: LineWebhookEvent) {
     return;
   }
 
+  // Handle typed amount for active payment request (before registration check)
+  if (/^\d+(?:\.\d{1,2})?$/.test(text) && event.source?.userId) {
+    const activeRequest = (await listRecords<Row>("line_payment_requests"))
+      .map(mapLinePaymentRequest)
+      .filter((r) => r.line_user_id === event.source?.userId && r.status === "selecting")
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+    if (activeRequest) {
+      await handleAmountSelection(event, activeRequest.id, parseFloat(text));
+      return;
+    }
+  }
+
   if (isCoreTextCommand(text) || isRegistrationText(text) || text.startsWith("pay:")) {
     await handleAction(event, text);
   }
@@ -145,6 +180,11 @@ async function handleAction(event: LineWebhookEvent, action: string) {
     }
     if (normalized.startsWith("pay:schedule:")) {
       await handleScheduleSelection(event, normalized.replace("pay:schedule:", ""));
+      return;
+    }
+    if (normalized.startsWith("pay:amount:")) {
+      const parts = normalized.split(":");
+      await handleAmountSelection(event, parts[2], parseFloat(parts[3]));
       return;
     }
     if (normalized.startsWith("pay:method:")) {
@@ -303,9 +343,80 @@ async function handleScheduleSelection(event: LineWebhookEvent, scheduleId: stri
     status: "selecting",
   });
 
+  const quickItems = [
+    quickPostback(
+      truncateLabel(`จ่ายเต็ม ${formatBaht(debt.remaining)}`, 20),
+      `pay:amount:${request.id}:${debt.remaining}`
+    ),
+  ];
+  if (debt.remaining > 20) {
+    const half = Math.round(debt.remaining / 2 * 100) / 100;
+    quickItems.push(
+      quickPostback(
+        truncateLabel(`ครึ่งหนึ่ง ${formatBaht(half)}`, 20),
+        `pay:amount:${request.id}:${half}`
+      )
+    );
+  }
+  quickItems.push(quickMessage("ยกเลิก", "ยกเลิก"));
+
   const message = createFlexMessage(
-    `เลือกวิธีชำระเงิน ${debt.schedule.name}`,
-    createPaymentMethodBubble(debt.schedule.name, debt.remaining)
+    `เลือกจำนวนเงิน ${debt.schedule.name}`,
+    createAmountSelectionBubble(debt.schedule.name, debt.remaining)
+  );
+  message.quickReply = { items: quickItems };
+
+  await replyLineMessages(event.replyToken, [message]);
+}
+
+async function handleAmountSelection(event: LineWebhookEvent, requestId: string, amount: number) {
+  const requests = await listRecords<Row>("line_payment_requests");
+  const row = requests.find((r) => r.id === requestId);
+  if (!row) {
+    await replyLineText(event.replyToken, [
+      "ไม่พบรายการชำระเงินครับ 😅",
+      "รายการอาจหมดอายุ หรือถูกยกเลิกไปแล้ว",
+      "",
+      "เริ่มใหม่ได้โดยพิมพ์ ชำระเงิน",
+    ].join("\n"));
+    return;
+  }
+
+  const request = mapLinePaymentRequest(row);
+  if (request.line_user_id !== event.source?.userId) {
+    await replyLineText(event.replyToken, "รายการนี้ไม่ตรงกับบัญชี LINE ของคุณครับ 🔐");
+    return;
+  }
+  if (request.status !== "selecting") {
+    await replyLineText(event.replyToken, [
+      "รายการนี้เลือกจำนวนเงินไปแล้วครับ",
+      "เริ่มใหม่ได้โดยพิมพ์ ชำระเงิน",
+    ].join("\n"));
+    return;
+  }
+  if (isNaN(amount) || amount <= 0) {
+    await replyLineText(event.replyToken, "กรุณาระบุจำนวนเงินที่ถูกต้อง (มากกว่า 0) ครับ");
+    return;
+  }
+  if (amount > request.amount) {
+    await replyLineText(event.replyToken, [
+      `จำนวนเงินเกินยอดค้าง ${formatBaht(request.amount)} ครับ 🧐`,
+      "ลองพิมพ์จำนวนใหม่ หรือกดปุ่มจ่ายเต็มจำนวน",
+    ].join("\n"));
+    return;
+  }
+
+  const roundedAmount = Math.round(amount * 100) / 100;
+  await updateRecord<Row>("line_payment_requests", request.id, { amount: roundedAmount }, ["amount"]);
+
+  // Look up schedule name
+  const schedules = (await listRecords<Row>("schedules")).map(mapSchedule);
+  const schedule = schedules.find((s) => s.id === request.schedule_id);
+  const scheduleName = schedule?.name || "ชำระเงิน";
+
+  const message = createFlexMessage(
+    `เลือกวิธีชำระเงิน ${scheduleName}`,
+    createPaymentMethodBubble(scheduleName, roundedAmount)
   );
   message.quickReply = {
     items: [
@@ -316,9 +427,7 @@ async function handleScheduleSelection(event: LineWebhookEvent, scheduleId: stri
     ],
   };
 
-  await replyLineMessages(event.replyToken, [
-    message,
-  ]);
+  await replyLineMessages(event.replyToken, [message]);
 }
 
 function createPayMenuBubble(
@@ -352,6 +461,16 @@ function createPayMenuBubble(
   }
 
   return flexBubble(bodyContents);
+}
+
+function createAmountSelectionBubble(scheduleName: string, remaining: number) {
+  return flexBubble([
+    flexHeader("เลือกจำนวนเงิน", scheduleName),
+    flexSeparator(),
+    metricBox("ยอดค้างทั้งหมด", formatBaht(remaining), "#2563EB", "#EFF6FF", "xxl"),
+    flexText("เลือกจำนวนจากปุ่มด้านล่าง หรือพิมพ์จำนวนเงินเอง", "#374151", "sm"),
+    flexText("เช่น 50 หรือ 100.50", "#6B7280", "xs"),
+  ]);
 }
 
 function createPaymentMethodBubble(scheduleName: string, amount: number) {
@@ -403,7 +522,9 @@ async function handleMethodSelection(event: LineWebhookEvent, requestId: string,
   }
 
   await updateRecord<Row>("line_payment_requests", request.id, { method, status: "awaiting_slip" }, ["method", "status"]);
-  const payload = generatePayload(PROMPTPAY_ID, { amount: request.amount });
+  const payload = method === "truemoney"
+    ? generateTrueMoneyPayload(request.amount)
+    : generatePayload(PROMPTPAY_ID, { amount: request.amount });
   const qrUrl = `https://quickchart.io/qr?size=600&margin=2&text=${encodeURIComponent(payload)}`;
 
   await replyLineMessages(event.replyToken, [
