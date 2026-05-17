@@ -231,6 +231,7 @@ async function readOcrText(data) {
 
 function createOcrOptions(langPath) {
   return {
+    workerPath: require.resolve("tesseract.js/src/worker-script/node/index.js"),
     langPath,
     cachePath: langPath,
     cacheMethod: "none",
