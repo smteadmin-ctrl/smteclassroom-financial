@@ -121,6 +121,14 @@ async function readOcrText(data: Buffer) {
       .sharpen()
       .png()
       .toBuffer();
+    const enlarged = await sharp(data)
+      .rotate()
+      .resize({ width: 2600, withoutEnlargement: false })
+      .grayscale()
+      .normalize()
+      .sharpen()
+      .png()
+      .toBuffer();
     const topCrop = metadata.width && metadata.height
       ? await sharp(data)
         .rotate()
@@ -153,15 +161,24 @@ async function readOcrText(data: Buffer) {
         .png()
         .toBuffer()
       : undefined;
-    const buffers = [prepared, topCrop, middleCrop].filter((buffer): buffer is Buffer => Boolean(buffer));
-    const results = await Promise.all(
+    const buffers = [prepared, enlarged, topCrop, middleCrop].filter((buffer): buffer is Buffer => Boolean(buffer));
+    const results = await Promise.allSettled(
       buffers.map((buffer) => recognize(buffer, lang, createOcrOptions(langPath)))
     );
 
-    return results
-      .map((result) => result.data.text.trim())
+    const text = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value.data.text.trim())
       .filter(Boolean)
-      .join("\n") || undefined;
+      .join("\n");
+
+    if (text) return text;
+
+    const firstError = results.find((result) => result.status === "rejected");
+    if (firstError?.status === "rejected") {
+      console.error("Failed to read slip OCR text", firstError.reason);
+    }
+    return undefined;
   } catch (error) {
     console.error("Failed to read slip OCR text", error);
     return undefined;

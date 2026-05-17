@@ -149,6 +149,14 @@ async function readOcrText(data) {
       .sharpen()
       .png()
       .toBuffer();
+    const enlarged = await sharp(data)
+      .rotate()
+      .resize({ width: 2600, withoutEnlargement: false })
+      .grayscale()
+      .normalize()
+      .sharpen()
+      .png()
+      .toBuffer();
     const topCrop = metadata.width && metadata.height
       ? await sharp(data)
         .rotate()
@@ -181,12 +189,13 @@ async function readOcrText(data) {
         .png()
         .toBuffer()
       : undefined;
-    const buffers = [prepared, topCrop, middleCrop].filter(Boolean);
-    const results = await Promise.all(
+    const buffers = [prepared, enlarged, topCrop, middleCrop].filter(Boolean);
+    const results = await Promise.allSettled(
       buffers.map((buffer) => recognize(buffer, lang, createOcrOptions(langPath)))
     );
     return results
-      .map((result) => result.data.text.trim())
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value.data.text.trim())
       .filter(Boolean)
       .join("\n");
   } catch (error) {
