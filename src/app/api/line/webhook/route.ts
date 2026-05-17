@@ -590,7 +590,14 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
     slipCheck.amountMatches !== true &&
     slipCheck.receiverAccountMatches !== true &&
     slipCheck.receiverNameMatches !== true;
-  const autoRejectReason = "ระบบไม่พบ QR สลิป ยอดเงิน เลขธุรกรรม หรือข้อมูลบัญชีจากรูปที่ส่งมา";
+  const autoRejectReasons = [
+    slipCheck.amountMatches === false ? "ยอดเงินในสลิปไม่ตรงกับยอดที่เลือกไว้" : "",
+    slipCheck.receiverAccountMatches === false ? "บัญชีปลายทางไม่ตรงกับที่ตั้งค่าไว้" : "",
+    slipCheck.receiverNameMatches === false ? "ชื่อบัญชีปลายทางไม่ตรงกับที่ตั้งค่าไว้" : "",
+    shouldAutoRejectInvalidImage ? "ระบบไม่พบ QR สลิป ยอดเงิน เลขธุรกรรม หรือข้อมูลบัญชีจากรูปที่ส่งมา" : "",
+  ].filter(Boolean);
+  const shouldAutoRejectSlip = autoRejectReasons.length > 0;
+  const autoRejectReason = autoRejectReasons.join(" • ");
   const receiverChecksConfigured = expectedReceiverAccounts.length > 0 || Boolean(expectedReceiverName);
   const receiverAllowsAutoApprove =
     receiverChecksConfigured &&
@@ -601,12 +608,12 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
     Boolean(slipCheck.slipTransactionId) &&
     slipCheck.amountMatches === true &&
     receiverAllowsAutoApprove &&
-    !shouldAutoRejectInvalidImage &&
+    !shouldAutoRejectSlip &&
     !duplicateSuspected;
-  const slipStatus = duplicateSuspected
-    ? "duplicate_suspected"
-    : shouldAutoRejectInvalidImage
-      ? "rejected"
+  const slipStatus = shouldAutoRejectSlip
+    ? "rejected"
+    : duplicateSuspected
+      ? "duplicate_suspected"
       : !slipCheck.qrReadable || slipCheck.amountMatches === false
         ? "wrong_amount"
         : "pending_slip_review";
@@ -614,7 +621,7 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
     duplicateByQr,
     duplicateByHash,
     duplicateByTransaction,
-    autoRejected: shouldAutoRejectInvalidImage,
+    autoRejected: shouldAutoRejectSlip,
     amountMatches: slipCheck.amountMatches,
     qrReadable: slipCheck.qrReadable,
     qrAmount: slipCheck.qrAmount,
@@ -636,7 +643,7 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
     "line_payment_requests",
     activeRequest.id,
     {
-      status: shouldAutoRejectInvalidImage ? "rejected" : "pending_slip_review",
+      status: shouldAutoRejectSlip ? "rejected" : "pending_slip_review",
       slip_status: slipStatus,
       slip_url: proof.url,
       slip_pathname: proof.pathname,
@@ -645,7 +652,7 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
       slip_transaction_id: slipCheck.slipTransactionId ?? null,
       slip_ocr_text: slipCheck.ocrText ?? null,
       slip_auto_check_result: autoCheckResult,
-      reject_reason: shouldAutoRejectInvalidImage ? autoRejectReason : null,
+      reject_reason: shouldAutoRejectSlip ? autoRejectReason : null,
       reviewed_by: null,
       reviewed_at: null,
     },
@@ -679,10 +686,11 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
     return;
   }
 
-  if (shouldAutoRejectInvalidImage) {
+  if (shouldAutoRejectSlip) {
     await replyLineText(event.replyToken, [
-      "รูปนี้ไม่ใช่สลิปที่ระบบตรวจสอบได้ครับ",
-      "กรุณาส่งรูปสลิปโอนเงินที่เห็น QR หรือรายละเอียดการโอนชัดเจนอีกครั้ง",
+      "สลิปยังไม่ผ่านการตรวจสอบนะครับ",
+      autoRejectReason,
+      "กรุณาส่งสลิปใหม่ที่ยอดเงินและบัญชีปลายทางถูกต้องอีกครั้ง",
     ].join("\n"));
     await cleanupAutoRejectedPaymentRequest(activeRequest.id, proof.pathname);
     return;
@@ -1248,7 +1256,7 @@ function buildAutoCheckResult({
   autoApproved: boolean;
 }) {
   const parts: string[] = [];
-  if (autoRejected) parts.push("ปฏิเสธอัตโนมัติ: รูปนี้ไม่พบข้อมูลที่เหมือนสลิปโอนเงิน");
+  if (autoRejected) parts.push("ปฏิเสธอัตโนมัติ");
   if (duplicateByQr || duplicateByHash || duplicateByTransaction) {
     const source = [
       duplicateByQr ? "QR" : "",
