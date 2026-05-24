@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คู่มือการเริ่มต้นใช้งาน Classroom Finance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', 'Tahoma', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f5f5f5;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 50px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .title-page {
+            text-align: center;
+            padding: 60px 0;
+            border-bottom: 3px solid #0066cc;
+            margin-bottom: 60px;
+        }
+        .title-page h1 {
+            font-size: 42px;
+            color: #0066cc;
+            margin-bottom: 20px;
+        }
+        .title-page p {
+            font-size: 18px;
+            color: #666;
+            margin: 10px 0;
+        }
+        .page-break {
+            page-break-after: always;
+            margin: 60px 0;
+            padding-top: 60px;
+            border-top: 2px solid #ddd;
+        }
+        h1 {
+            font-size: 32px;
+            color: #0066cc;
+            margin: 40px 0 20px 0;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 24px;
+            color: #0066cc;
+            margin: 30px 0 15px 0;
+        }
+        h3 {
+            font-size: 18px;
+            color: #333;
+            margin: 20px 0 10px 0;
+            font-weight: bold;
+        }
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+        li {
+            margin: 8px 0;
+            line-height: 1.8;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #f9f9f9;
+        }
+        table th {
+            background: #0066cc;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        table tr:hover {
+            background: #f0f0f0;
+        }
+        code {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 2px 5px;
+            font-family: 'Courier New', monospace;
+            border-radius: 3px;
+        }
+        pre {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 15px;
+            overflow-x: auto;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+        .box {
+            background: #e6f2ff;
+            border-left: 4px solid #0066cc;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .box.warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .box.success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        .box.danger {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        .toc {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .toc h3 {
+            margin-top: 0;
+        }
+        .toc ol {
+            margin: 10px 0 10px 30px;
+        }
+        .step {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 3px solid #0066cc;
+        }
+        .step strong {
+            color: #0066cc;
+        }
+        .feature-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .feature-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #28a745;
+        }
+        .feature-item strong {
+            color: #28a745;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .formula {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            text-align: center;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #999;
+            font-size: 12px;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+                padding: 40px;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- Title Page -->
+        <div class="title-page">
+            <h1>🏫 Classroom Finance 5.0</h1>
+            <p><strong>คู่มือการเริ่มต้นใช้งาน</strong></p>
+            <p>ระบบจัดการการเงินห้องเรียน</p>
+            <p style="margin-top: 40px; font-size: 14px; color: #999;">
+                เอกสารฉบับนี้ใช้สำหรับเหรัญญิกรุ่นใหม่และผู้ดูแลระบบ<br>
+                รุ่นที่ 1.0 | วันที่พิมพ์: 24 พฤษภาคม 2566
+            </p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="page-break"></div>
+        <h1>📋 สารบัญ</h1>
+        <div class="toc">
+            <ol>
+                <li>บทนำและความรู้พื้นฐาน</li>
+                <li>การติดตั้งและเตรียมระบบ</li>
+                <li>การตั้งค่า Supabase (ฐานข้อมูล)</li>
+                <li>การตั้งค่า LINE Bot</li>
+                <li>การใช้งานระบบจริง</li>
+                <li>หน้าแต่ละส่วน (Dashboard, Transactions, Schedule, Students)</li>
+                <li>หน้าตั้งค่า (Settings)</li>
+                <li>QR Code และวิธีชำระเงิน</li>
+                <li>การตรวจสลิป (Slip Checking)</li>
+                <li>คำถามที่พบบ่อย (FAQ)</li>
+                <li>การแก้ไขปัญหา (Troubleshooting)</li>
+            </ol>
+        </div>
+
+        <!-- Chapter 1 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 1: บทนำและความรู้พื้นฐาน</h1>
+
+        <h2>ระบบ Classroom Finance คืออะไร</h2>
+        <p>
+            Classroom Finance 5.0 เป็นระบบจัดการการเงินห้องเรียนที่ได้รับการออกแบบเพื่อช่วยเหรัญญิกหรือผู้ดูแลห้องเรียน 
+            ในการจัดการรายรับรายจ่ายของห้องเรียนในแบบที่ง่ายและมีประสิทธิภาพ ระบบนี้ใช้เทคโนโลยีสมัยใหม่เพื่อให้สามารถ 
+            ติดตามการเก็บเงินจากนักเรียน บันทึกรายรับรายจ่าย และตรวจสลิปการโอนเงินได้อย่างอัตโนมัติ
+        </p>
+
+        <h2>ส่วนประกอบของระบบ</h2>
+        <div class="feature-list">
+            <div class="feature-item">
+                <strong>🌐 เว็บแอปพลิเคชัน</strong>
+                สำหรับเหรัญญิกหรือผู้บริหารห้องเรียน ใช้ Chrome, Firefox, Safari บนคอมพิวเตอร์ทุกเครื่อง
+            </div>
+            <div class="feature-item">
+                <strong>📱 LINE Bot</strong>
+                สำหรับนักเรียน ช่วยให้นักเรียนดูสถานะการชำระเงิน โอนเงิน และส่งสลิป ผ่าน LINE Official Account
+            </div>
+            <div class="feature-item">
+                <strong>☁️ ฐานข้อมูล Supabase</strong>
+                เก็บข้อมูลนักเรียน กำหนดการ ธุรกรรม และรูปสลิป ซึ่งสามารถเข้าถึงจากทุกที่
+            </div>
+            <div class="feature-item">
+                <strong>📊 การวิเคราะห์ข้อมูล</strong>
+                แสดงกราฟและสถิติการเก็บเงิน ยอดคงเหลือ และแนวโน้มการเงินห้องเรียน
+            </div>
+        </div>
+
+        <h2>ประโยชน์ของระบบ</h2>
+        <ul>
+            <li><strong>บันทึกอัตโนมัติ:</strong> ข้อมูลการเก็บเงินจาก LINE บันทึกลงระบบโดยอัตโนมัติ</li>
+            <li><strong>ตรวจสลิปอัตโนมัติ:</strong> ระบบสามารถอ่านข้อมูลจากรูปสลิปและตรวจสอบความถูกต้อง</li>
+            <li><strong>หลายช่องทางชำระเงิน:</strong> รองรับการโอนธนาคาร TrueMoney และเงินสด</li>
+            <li><strong>ดูแลง่าย:</strong> ไม่ต้องแก้โค้ด สามารถปรับตั้งค่าได้ทั้งหมดจากหน้า Settings</li>
+            <li><strong>ปลอดภัย:</strong> ข้อมูลเก็บไว้ในระบบคลาวด์ที่มีการเข้ารหัส</li>
+        </ul>
+
+        <div class="box success">
+            <strong>✓ ความรู้ที่ต้องการ:</strong> ไม่จำเป็นต้องมีพื้นฐานเทคนิคใด ๆ เพียงแค่มีความสนใจที่จะเรียนรู้และใช้งานเท่านั้น
+        </div>
+
+        <!-- Chapter 2 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 2: การติดตั้งและเตรียมระบบ</h1>
+
+        <h2>ความต้องการทางด้านเทคนิค</h2>
+        <table>
+            <tr>
+                <th>รายการ</th>
+                <th>ข้อกำหนด</th>
+                <th>หมายเหตุ</th>
+            </tr>
+            <tr>
+                <td>Node.js</td>
+                <td>เวอร์ชัน 18 หรือสูงกว่า (แนะนำ LTS)</td>
+                <td>ดาวน์โหลดจาก nodejs.org</td>
+            </tr>
+            <tr>
+                <td>npm</td>
+                <td>มาพร้อมกับ Node.js</td>
+                <td>ใช้สำหรับติดตั้ง packages</td>
+            </tr>
+            <tr>
+                <td>Git</td>
+                <td>แนะนำเวอร์ชันล่าสุด</td>
+                <td>ใช้โคลนโครงการ (ถ้าเป็นครั้งแรก)</td>
+            </tr>
+            <tr>
+                <td>เบราว์เซอร์</td>
+                <td>Chrome, Firefox, Safari ใหม่ ๆ</td>
+                <td>ใช้เข้าเว็บแอปพลิเคชัน</td>
+            </tr>
+            <tr>
+                <td>บัญชี Supabase</td>
+                <td>สมัครฟรีที่ supabase.com</td>
+                <td>ใช้เป็นฐานข้อมูล</td>
+            </tr>
+        </table>
+
+        <h2>ขั้นตอนที่ 1: ตรวจสอบ Node.js</h2>
+        <div class="step">
+            <strong>1. เปิด Terminal (macOS/Linux) หรือ Command Prompt (Windows)</strong>
+            <p style="margin-top: 10px;">
+                macOS: ค้นหา "Terminal" ในเมนู Spotlight (Cmd + Space)<br>
+                Windows: ค้นหา "Command Prompt" หรือ "PowerShell"
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>2. พิมพ์คำสั่งนี้:</strong>
+            <pre>node --version</pre>
+            <p style="margin-top: 10px;">
+                ถ้าเห็นเลขเวอร์ชัน เช่น <code>v18.0.0</code> หรือสูงกว่า แสดงว่า Node.js ติดตั้งแล้ว ✓<br>
+                ถ้าเห็นข้อความ "command not found" ให้ดาวน์โหลดและติดตั้งจาก <code>nodejs.org</code>
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>3. ตรวจสอบ npm</strong>
+            <pre>npm --version</pre>
+            <p style="margin-top: 10px;">
+                ควรเห็นเลขเวอร์ชัน เช่น <code>v9.0.0</code> หรือสูงกว่า
+            </p>
+        </div>
+
+        <h2>ขั้นตอนที่ 2: โคลนโครงการ (คัดลอกโค้ดจาก GitHub)</h2>
+        <div class="step">
+            <strong>1. สร้างโฟลเดอร์สำหรับเก็บโครงการ</strong>
+            <pre>mkdir ~/classroom-finance
+cd ~/classroom-finance</pre>
+        </div>
+
+        <div class="step">
+            <strong>2. โคลนโครงการจาก GitHub</strong>
+            <pre>git clone &lt;repository-url&gt; .</pre>
+            <p style="margin-top: 10px;">
+                แทนที่ <code>&lt;repository-url&gt;</code> ด้วย URL ที่ได้รับจากผู้พัฒนา
+            </p>
+        </div>
+
+        <h2>ขั้นตอนที่ 3: ติดตั้ง Dependencies (ไลบรารี่ที่ต้องใช้)</h2>
+        <div class="step">
+            <strong>1. เข้าไปในโฟลเดอร์โครงการ</strong>
+            <pre>cd classroom-finance</pre>
+        </div>
+
+        <div class="step">
+            <strong>2. ติดตั้ง npm packages</strong>
+            <pre>npm install</pre>
+            <p style="margin-top: 10px;">
+                ขั้นตอนนี้จะใช้เวลา 1-3 นาที ระบบจะดาวน์โหลดไลบรารี่ทั้งหมดที่ต้องใช้
+            </p>
+        </div>
+
+        <div class="box">
+            <strong>ℹ️ หมายเหตุ:</strong> หากแสดงข้อความ "warning" ให้ไม่เป็นห่วง ตราบใดที่ไม่มีข้อความ "error" ระบบก็จะติดตั้งสำเร็จ
+        </div>
+
+        <h2>ขั้นตอนที่ 4: ตั้งค่า Environment Variables</h2>
+        <div class="step">
+            <strong>1. สร้างไฟล์ .env.local ในโฟลเดอร์หลัก</strong>
+            <p style="margin-top: 10px;">
+                ในโฟลเดอร์ "classroom-finance" ให้สร้างไฟล์ชื่อ <code>.env.local</code><br>
+                (หากมีไฟล์ .env.local.example อยู่ให้ copy มา)
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>2. ใส่ค่าขั้นต่ำ (สำหรับตอนนี้)</strong>
+            <pre>SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here</pre>
+            <p style="margin-top: 10px;">
+                สำหรับตอนนี้ ให้ใส่เสียว ๆ ก่อน ในส่วน "บทที่ 3" จะบอกวิธีหาค่าถูกต้อง
+            </p>
+        </div>
+
+        <div class="box warning">
+            <strong>⚠️ สำคัญ:</strong> อย่าแชร์ไฟล์ .env.local หรือค่าเหล่านี้กับใคร
+        </div>
+
+        <!-- Chapter 3 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 3: การตั้งค่า Supabase (ฐานข้อมูล)</h1>
+
+        <p>
+            Supabase เป็นฐานข้อมูล PostgreSQL แบบคลาวด์ที่ใช้เก็บข้อมูลนักเรียน กำหนดการ ธุรกรรม และรูปสลิป 
+            ระบบของเราใช้ Supabase เพื่อให้สามารถเข้าถึงข้อมูลจากที่ใดก็ได้
+        </p>
+
+        <h2>ขั้นตอนที่ 1: สร้างบัญชี Supabase</h2>
+        <div class="step">
+            <strong>1. เข้าไปที่ supabase.com</strong>
+            <p style="margin-top: 10px;">เปิดเบราว์เซอร์และไปที่ https://supabase.com</p>
+        </div>
+
+        <div class="step">
+            <strong>2. คลิก "Start your project"</strong>
+            <p style="margin-top: 10px;">สมัครสมาชิกด้วยบัญชี Google, GitHub หรือ Email</p>
+        </div>
+
+        <div class="step">
+            <strong>3. เลือก Plan</strong>
+            <p style="margin-top: 10px;">
+                สำหรับห้องเรียน แนะนำให้ใช้ Free tier แรกสุด เพราะ:
+            </p>
+            <ul style="margin-top: 10px;">
+                <li>ฟรีทั้งหมด</li>
+                <li>เพียงพอสำหรับห้องเรียน 1-2 ห้อง</li>
+                <li>มี Storage 200 MB สำหรับรูปสลิป</li>
+            </ul>
+        </div>
+
+        <h2>ขั้นตอนที่ 2: สร้าง Supabase Project</h2>
+        <div class="step">
+            <strong>1. คลิก "New Project"</strong>
+        </div>
+
+        <div class="step">
+            <strong>2. กรอกข้อมูล</strong>
+            <table>
+                <tr>
+                    <th>ช่อง</th>
+                    <th>ค่าที่ควรกรอก</th>
+                </tr>
+                <tr>
+                    <td><strong>Name</strong></td>
+                    <td>Classroom Finance 5 (หรือชื่อห้องเรียนของคุณ)</td>
+                </tr>
+                <tr>
+                    <td><strong>Database Password</strong></td>
+                    <td>สร้างรหัสผ่านแรงที่สุด! ตัวอักษรพิมพ์ใหญ่/เล็ก + ตัวเลข + สัญลักษณ์</td>
+                </tr>
+                <tr>
+                    <td><strong>Region</strong></td>
+                    <td>เลือก Southeast Asia (Thailand) ถ้ามี หรือ Singapore</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="step">
+            <strong>3. คลิก "Create new project"</strong>
+            <p style="margin-top: 10px;">
+                ระบบจะใช้เวลา 2-3 นาทีในการเตรียมฐานข้อมูล<br>
+                หน้าจอจะแสดง "Creating your project..." ระหว่างทำการ
+            </p>
+        </div>
+
+        <h2>ขั้นตอนที่ 3: ดึง API Credentials</h2>
+        <div class="step">
+            <strong>1. คลิก "Settings" (ไอคอนเฟืองที่มุมล่างซ้าย)</strong>
+        </div>
+
+        <div class="step">
+            <strong>2. ไปที่ "API" ในเมนูด้านซ้าย</strong>
+        </div>
+
+        <div class="step">
+            <strong>3. ค้นหา "Project URL"</strong>
+            <p style="margin-top: 10px;">
+                ควรมีค่าเช่น: <code>https://xxxxxabcd1234.supabase.co</code><br>
+                ← คัดลอกค่านี้
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>4. ค้นหา "Project API keys"</strong>
+            <p style="margin-top: 10px;">
+                จะมี 2 ตัว:
+            </p>
+            <ul style="margin-top: 10px;">
+                <li><code>anon/public</code> - ใช้ฝั่งไคลเอนต์ (ไม่สำคัญ)</li>
+                <li><code>service_role</code> - ใช้ฝั่งเซิร์ฟเวอร์ (สำคัญมาก! อย่าแชร์)</li>
+            </ul>
+            <p style="margin-top: 10px;">
+                ← คัดลอก service_role key
+            </p>
+        </div>
+
+        <h2>ขั้นตอนที่ 4: อัปเดต .env.local</h2>
+        <div class="step">
+            <strong>1. เปิดไฟล์ .env.local ในโฟลเดอร์หลัก</strong>
+        </div>
+
+        <div class="step">
+            <strong>2. อัปเดตค่า</strong>
+            <pre>SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGc...jQlkI_A</pre>
+            <p style="margin-top: 10px;">
+                แทนที่ <code>your-project-id</code> ด้วยรหัสโครงการจริง<br>
+                แทนที่ <code>eyJhbGc...jQlkI_A</code> ด้วย service_role key จริง
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>3. บันทึกไฟล์</strong>
+        </div>
+
+        <h2>ขั้นตอนที่ 5: สร้างตาราง Database (Migrations)</h2>
+        <div class="step">
+            <strong>1. เปิด SQL Editor ใน Supabase</strong>
+            <p style="margin-top: 10px;">
+                ไปที่ Dashboard → SQL Editor (ในเมนูด้านซ้าย)
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>2. สร้าง Query ใหม่</strong>
+            <p style="margin-top: 10px;">
+                คลิก "New query"
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>3. คัดลอก SQL จากไฟล์</strong>
+            <p style="margin-top: 10px;">
+                เปิดไฟล์ <code>supabase/migrations/001_initial_schema.sql</code><br>
+                คัดลอกทั้งหมดและวาง (Paste) ลงใน SQL Editor
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>4. รัน Query</strong>
+            <p style="margin-top: 10px;">
+                คลิก "Run" หรือกด Cmd/Ctrl + Enter
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>5. ทำซ้ำสำหรับ Migration ทั้งหมด</strong>
+            <p style="margin-top: 10px;">
+                รัน migration ตัวเลขต่อไป (002, 003, ..., 012) ตามลำดับ<br>
+                จนกว่าจะจบทั้งหมด
+            </p>
+        </div>
+
+        <div class="box success">
+            <strong>✓ สำเร็จแล้ว:</strong> เมื่ออยากเห็น "Success" สำหรับ migration ทั้งหมด ให้ไปที่ Table Editor เพื่อตรวจสอบว่ามีตารางทั้งหมดแล้ว
+        </div>
+
+        <!-- Chapter 4 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 4: การตั้งค่า LINE Bot</h1>
+
+        <p>
+            LINE Bot เป็นช่องทางสำหรับนักเรียนในการดูสถานะการชำระเงิน โอนเงิน และส่งสลิป 
+            เหรัญญิกจะบันทึกข้อมูลทั้งหมดได้โดยตรงจากการตอบสนองของนักเรียน
+        </p>
+
+        <h2>ขั้นตอนที่ 1: สร้าง LINE Channel (Business Account)</h2>
+        <div class="step">
+            <strong>1. เข้าไป LINE Developers Console</strong>
+            <p style="margin-top: 10px;">
+                ไปที่ https://developers.line.biz/en/
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>2. ลงชื่อเข้าด้วยบัญชี LINE</strong>
+            <p style="margin-top: 10px;">
+                ใช้บัญชี LINE ส่วนตัว (หรือสร้างตัวใหม่สำหรับโครงการนี้)
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>3. สร้าง Messaging API Channel</strong>
+            <ul style="margin-top: 10px;">
+                <li>คลิก "Create" → "Create Messaging API Channel"</li>
+                <li>กรอก Channel name: "Classroom Finance" (ชื่อใดก็ได้)</li>
+                <li>กรอก Description: "ระบบจัดการการเงินห้องเรียน"</li>
+                <li>เลือก Category: "Education"</li>
+                <li>คลิก "Create"</li>
+            </ul>
+        </div>
+
+        <div class="box warning">
+            <strong>⚠️ สำคัญ:</strong> หลังสร้าง Channel จะมี Channel ID และ Channel Secret บันทึกไว้
+        </div>
+
+        <h2>ขั้นตอนที่ 2: ดึง Credentials จาก LINE</h2>
+        <div class="step">
+            <strong>1. ไปที่ Settings → Basic settings</strong>
+        </div>
+
+        <div class="step">
+            <strong>2. ค้นหา "Channel ID"</strong>
+            <p style="margin-top: 10px;">
+                ← คัดลอกค่านี้
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>3. ค้นหา "Channel Secret"</strong>
+            <p style="margin-top: 10px;">
+                ← คัดลอกค่านี้
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>4. ไปที่ Messaging API</strong>
+            <p style="margin-top: 10px;">
+                ในแท็บ "Messaging API" ค้นหา "Channel Access Token"<br>
+                คลิก "Issue" ถ้ายังไม่มี<br>
+                ← คัดลอก Access Token (ตัวยาวมาก ๆ)
+            </p>
+        </div>
+
+        <h2>ขั้นตอนที่ 3: ตั้งค่า Webhook URL</h2>
+        <div class="step">
+            <strong>1. ใน LINE Developers Console ไปที่ Messaging API</strong>
+        </div>
+
+        <div class="step">
+            <strong>2. ค้นหา "Webhook URL"</strong>
+        </div>
+
+        <div class="step">
+            <strong>3. ใส่ URL ของเว็บไซต์ของคุณ</strong>
+            <p style="margin-top: 10px;">
+                Local (ทดสอบ): <code>http://localhost:3000/api/line/webhook</code><br>
+                Production: <code>https://your-domain.com/api/line/webhook</code>
+            </p>
+        </div>
+
+        <div class="step">
+            <strong>4. คลิก "Update"</strong>
+        </div>
+
+        <div class="step">
+            <strong>5. เปิด "Use webhook"</strong>
+            <p style="margin-top: 10px;">
+                สวิตซ์ให้เป็น "Enabled"
+            </p>
+        </div>
+
+        <h2>ขั้นตอนที่ 4: อัปเดต .env.local</h2>
+        <pre>LINE_CHANNEL_ID=your-channel-id
+LINE_CHANNEL_SECRET=your-channel-secret
+LINE_CHANNEL_ACCESS_TOKEN=your-very-long-access-token</pre>
+
+        <div class="box success">
+            <strong>✓ สำเร็จ:</strong> ตอนนี้ LINE Bot ของคุณพร้อมแล้ว! ขั้นตอนต่อไปจะ run เว็บและทดสอบ
+        </div>
+
+        <!-- Chapter 5 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 5: การใช้งานระบบจริง (First Run)</h1>
+
+        <h2>ขั้นตอนที่ 1: รัน Development Server</h2>
+        <div class="step">
+            <strong>1. เปิด Terminal ที่โฟลเดอร์โครงการ</strong>
+        </div>
+
+        <div class="step">
+            <strong>2. พิมพ์คำสั่ง</strong>
+            <pre>npm run dev</pre>
+            <p style="margin-top: 10px;">
+                ระบบจะแสดง:
+            </p>
+            <pre>  ▲ Next.js 16.1.0
+  - Local:        http://localhost:3000</pre>
+        </div>
+
+        <div class="step">
+            <strong>3. เปิดเบราว์เซอร์</strong>
+            <p style="margin-top: 10px;">
+                พิมพ์ <code>http://localhost:3000</code> ในแถบ URL
+            </p>
+        </div>
+
+        <div class="box success">
+            <strong>✓ ยินดีด้วย!</strong> เว็บ Classroom Finance ของคุณขึ้นแล้ว 🎉
+        </div>
+
+        <h2>ขั้นตอนที่ 2: ทำความรู้จักกับ Interface</h2>
+        <p>
+            เมื่อเข้าเว็บ จะเห็นหน้าจอหลัก (Dashboard) มีเมนูด้านข้าง (Desktop) หรือเมนูด้านบน (Mobile):
+        </p>
+
+        <ul>
+            <li><strong>🏠 Dashboard:</strong> หน้าหลักแสดงยอดคงเหลือ รายรับ รายจ่าย และสถิติ</li>
+            <li><strong>💳 Transactions:</strong> บันทึกรายรับรายจ่าย</li>
+            <li><strong>📅 Schedule:</strong> จัดการกำหนดการเก็บเงิน</li>
+            <li><strong>👥 Students:</strong> ข้อมูลนักเรียน</li>
+            <li><strong>⚙️ Settings:</strong> ตั้งค่า LINE, Supabase, QR และอื่น ๆ</li>
+        </ul>
+
+        <h2>ขั้นตอนที่ 3: เพิ่มข้อมูลเริ่มต้น</h2>
+        <div class="step">
+            <strong>1. ไปหน้า "👥 Students"</strong>
+        </div>
+
+        <div class="step">
+            <strong>2. คลิกการ์ด "+" เพื่อเพิ่มนักเรียนรายแรก</strong>
+        </div>
+
+        <div class="step">
+            <strong>3. กรอกข้อมูล</strong>
+            <ul style="margin-top: 10px;">
+                <li>คำนำหน้า (นาย/นางสาว)</li>
+                <li>ชื่อ</li>
+                <li>ชื่อเล่น</li>
+                <li>เลขที่</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <strong>4. คลิก "บันทึก"</strong>
+        </div>
+
+        <div class="step">
+            <strong>5. ทำซ้ำสำหรับนักเรียนทั้งหมด</strong>
+            <p style="margin-top: 10px;">
+                หรือ สามารถใช้ CSV import ได้ (ในเวอร์ชันต่อไป)
+            </p>
+        </div>
+
+        <h2>ขั้นตอนที่ 4: ตั้งค่า Settings</h2>
+        <p>
+            หลังจากเพิ่มนักเรียน ให้ไปหน้า ⚙️ Settings เพื่อตั้งค่า:
+        </p>
+
+        <ul>
+            <li>PromptPay ID (เพื่อสร้าง QR ธนาคาร)</li>
+            <li>ข้อมูลบัญชีรับโอนธนาคาร</li>
+            <li>ข้อมูล TrueMoney</li>
+            <li>ข้อความ LINE ที่ต้องการให้บอทส่ง</li>
+            <li>EasySlip API Key (ถ้ามี)</li>
+        </ul>
+
+        <div class="box">
+            <strong>ℹ️ หมายเหตุ:</strong> สามารถข้าม Settings ตอนนี้ได้ มาทำต่อเมื่อต้องการใช้งาน LINE Bot จริง
+        </div>
+
+        <!-- Chapter 6 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 6: การใช้งานแต่ละหน้า</h1>
+
+        <h2>🏠 หน้า Dashboard (หน้าหลัก)</h2>
+        <p>
+            Dashboard เป็นหน้าสรุปยอดรวมการเงินห้องเรียน แสดงสถิติและแนวโน้มทั้งหมดในคำว่า "ภาพรวม"
+        </p>
+
+        <h3>ส่วนประกอบของ Dashboard:</h3>
+        <div class="feature-list">
+            <div class="feature-item">
+                <strong>💰 ยอดคงเหลือ</strong>
+                ยอดเงินคงเหลือทั้งหมด = รายรับ - รายจ่าย
+            </div>
+            <div class="feature-item">
+                <strong>📈 รายรับ</strong>
+                รวมธุรกรรมรายรับและเก็บเงินจากนักเรียน
+            </div>
+            <div class="feature-item">
+                <strong>📉 รายจ่าย</strong>
+                รวมธุรกรรมรายจ่ายทั้งหมด
+            </div>
+            <div class="feature-item">
+                <strong>🏦 เก็บเงินตามช่องทาง</strong>
+                แบ่งเป็น ธนาคาร / เงินสด / TrueMoney
+            </div>
+            <div class="feature-item">
+                <strong>👫 สถานะการชำระ</strong>
+                จำนวนนักเรียนที่ชำระแล้ว / ค้างชำระ (เลือกกำหนดการได้)
+            </div>
+            <div class="feature-item">
+                <strong>📊 แผนภูมิ</strong>
+                กราฟรายรับรายจ่ายตามหมวดหมู่ (เลือกเดือนได้)
+            </div>
+        </div>
+
+        <h3>วิธีใช้ Dashboard:</h3>
+        <ol>
+            <li>เปิดหน้า Dashboard (ปกติจะเป็นหน้า default เมื่อเข้าเว็บ)</li>
+            <li>ดูยอดคงเหลือในการ์ดด้านบน</li>
+            <li>เลือกกำหนดการจากเมนู dropdown เพื่อดูสถานะการชำระของนักเรียน</li>
+            <li>เลือกเดือนในแผนภูมิเพื่อดูสัดส่วนรายรับรายจ่ายของเดือนนั้น ๆ</li>
+        </ol>
+
+        <h2>💳 หน้า Transactions (บันทึกรายการ)</h2>
+        <p>
+            หน้านี้ใช้สำหรับบันทึก แก้ไข หรือลบ รายรับรายจ่ายของห้องเรียน
+        </p>
+
+        <h3>ประเภทธุรกรรม:</h3>
+        <table>
+            <tr>
+                <th>ประเภท</th>
+                <th>คำอธิบาย</th>
+                <th>ตัวอย่าง</th>
+            </tr>
+            <tr>
+                <td><strong>Income (รายรับ)</strong></td>
+                <td>เงินเข้าห้องเรียน</td>
+                <td>เก็บบำรุง, ค่าซื้อหนังสือ, เงินทัศนศึกษา</td>
+            </tr>
+            <tr>
+                <td><strong>Expense (รายจ่าย)</strong></td>
+                <td>เงินออกจากห้องเรียน</td>
+                <td>ค่าของรางวัล, ค่าเต้ชาย, ค่าวัสดุ</td>
+            </tr>
+            <tr>
+                <td><strong>Transfer (โอนย้าย)</strong></td>
+                <td>โอนเงินระหว่างบัญชี</td>
+                <td>ไม่นิยมใช้ (สำหรับกรณีพิเศษ)</td>
+            </tr>
+        </table>
+
+        <h3>วิธีเพิ่มธุรกรรม:</h3>
+        <ol>
+            <li>ไปหน้า "💳 Transactions"</li>
+            <li>คลิกปุ่ม "➕ เพิ่ม" ที่มุมบนขวา</li>
+            <li>ระบบจะถามว่าเป็นกำหนดการหรือธุรกรรม</li>
+            <li>เลือก "ธุรกรรม" (ธุรกรรมปกติ)</li>
+            <li>กรอกข้อมูล:
+                <ul>
+                    <li>ชื่อรายการ</li>
+                    <li>เลือก Income หรือ Expense</li>
+                    <li>จำนวนเงิน</li>
+                    <li>วธีชำระ (ธนาคาร/เงินสด/อื่น ๆ)</li>
+                    <li>หมวดหมู่ (ไม่บังคับ)</li>
+                    <li>หมายเหตุ (ไม่บังคับ)</li>
+                </ul>
+            </li>
+            <li>คลิก "บันทึก"</li>
+        </ol>
+
+        <h3>วิธีแก้ไขธุรกรรม:</h3>
+        <ol>
+            <li>ค้นหาธุรกรรมในตาราง</li>
+            <li>คลิกแถวนั้น</li>
+            <li>ระบบจะแสดง Modal แก้ไข</li>
+            <li>แก้ไขข้อมูลที่ต้องการ</li>
+            <li>คลิก "บันทึก"</li>
+        </ol>
+
+        <h2>📅 หน้า Schedule (กำหนดการ)</h2>
+        <p>
+            หน้านี้ใช้จัดการกำหนดการเก็บเงินจากนักเรียน เช่น "เก็บค่าหนังสือ 200 บาท"
+        </p>
+
+        <h3>ข้อมูลกำหนดการ:</h3>
+        <table>
+            <tr>
+                <th>ช่อง</th>
+                <th>ความหมาย</th>
+                <th>ตัวอย่าง</th>
+            </tr>
+            <tr>
+                <td><strong>ชื่อ</strong></td>
+                <td>ชื่อกำหนดการ</td>
+                <td>เก็บค่าหนังสือ</td>
+            </tr>
+            <tr>
+                <td><strong>จำนวนเงิน</strong></td>
+                <td>เงินต่อคน</td>
+                <td>200 บาท</td>
+            </tr>
+            <tr>
+                <td><strong>วันเริ่ม</strong></td>
+                <td>วันที่เริ่มเก็บ</td>
+                <td>1 มกราคม 2567</td>
+            </tr>
+            <tr>
+                <td><strong>วันสิ้นสุด</strong></td>
+                <td>วันตัดสินใจ (ไม่บังคับ)</td>
+                <td>31 มกราคม 2567</td>
+            </tr>
+            <tr>
+                <td><strong>นักเรียน</strong></td>
+                <td>เลือกใครที่จะเก็บเงิน</td>
+                <td>ทั้งห้อง / นักเรียนบาง คน</td>
+            </tr>
+            <tr>
+                <td><strong>หมายเหตุ</strong></td>
+                <td>รายละเอียด (ไม่บังคับ)</td>
+                <td>วิทยาศาสตร์ชั้น ม.1</td>
+            </tr>
+        </table>
+
+        <h3>วิธีเพิ่มกำหนดการ:</h3>
+        <ol>
+            <li>ไปหน้า "📅 Schedule"</li>
+            <li>คลิกปุ่ม "➕ เพิ่มกำหนดการ"</li>
+            <li>กรอกข้อมูลตามตาราง</li>
+            <li>เลือกนักเรียนที่จะเก็บเงิน (หรือเลือก "ทั้งหมด")</li>
+            <li>คลิก "บันทึก"</li>
+        </ol>
+
+        <h3>วิธีดูรายละเอียดกำหนดการ:</h3>
+        <ol>
+            <li>ดูการ์ดกำหนดการในหน้า Schedule</li>
+            <li>คลิกที่การ์ด</li>
+            <li>ระบบจะแสดง Modal รายละเอียด</li>
+            <li>สามารถดูสถานะการชำระของนักเรียน (ชำระแล้ว / ค้างชำระ)</li>
+            <li>สามารถสร้าง payment request จาก LINE ได้</li>
+        </ol>
+
+        <h2>👥 หน้า Students (นักเรียน)</h2>
+        <p>
+            หน้านี้ใช้จัดการข้อมูลนักเรียน ดูสถานะการชำระ และประวัติการโอนเงิน
+        </p>
+
+        <h3>ข้อมูลนักเรียน:</h3>
+        <table>
+            <tr>
+                <th>ช่อง</th>
+                <th>ความหมาย</th>
+            </tr>
+            <tr>
+                <td><strong>เลขที่</strong></td>
+                <td>เลขที่ของนักเรียน (1-40)</td>
+            </tr>
+            <tr>
+                <td><strong>คำนำหน้า</strong></td>
+                <td>นาย / นางสาว</td>
+            </tr>
+            <tr>
+                <td><strong>ชื่อ</strong></td>
+                <td>ชื่อจริง</td>
+            </tr>
+            <tr>
+                <td><strong>ชื่อเล่น</strong></td>
+                <td>ชื่อเล่น (ไม่บังคับ)</td>
+            </tr>
+            <tr>
+                <td><strong>รูป</strong></td>
+                <td>รูปโปรไฟล์ (ไม่บังคับ)</td>
+            </tr>
+        </table>
+
+        <h3>วิธีเพิ่มนักเรียน:</h3>
+        <ol>
+            <li>ไปหน้า "👥 Students"</li>
+            <li>คลิกการ์ด "➕"</li>
+            <li>กรอกข้อมูล</li>
+            <li>คลิก "บันทึก"</li>
+        </ol>
+
+        <!-- Chapter 7 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 7: หน้าตั้งค่า (Settings)</h1>
+
+        <p>
+            หน้าตั้งค่าเป็นหัวใจของการปรับแต่งระบบ โดยไม่ต้องแก้โค้ด ที่นี่คุณสามารถตั้งค่า:
+        </p>
+
+        <ul>
+            <li>ข้อมูล Supabase และ LINE</li>
+            <li>ข้อมูลบัญชีรับเงิน</li>
+            <li>QR Code</li>
+            <li>ข้อความ LINE ที่บอทส่ง</li>
+            <li>เซ็ตอัปการตรวจสลิป</li>
+        </ul>
+
+        <h2>การเข้าหน้า Settings</h2>
+        <ol>
+            <li>ไปที่ <code>/settings</code> หรือคลิก "⚙️ ตั้งค่า" ในเมนู</li>
+            <li>หน้านี้มหมวด 4 หมวด: Secrets, Receiver, LINE Rich Menu, และ LINE Messages</li>
+        </ol>
+
+        <h2>หมวด 1: Secrets (ข้อมูลลับ)</h2>
+        <p>
+            อย่าแชร์ค่าเหล่านี้กับใคร!
+        </p>
+
+        <table>
+            <tr>
+                <th>ช่อง</th>
+                <th>ค่าที่ต้อง</th>
+            </tr>
+            <tr>
+                <td><strong>Supabase URL</strong></td>
+                <td>https://xxxxx.supabase.co</td>
+            </tr>
+            <tr>
+                <td><strong>Supabase Service Role Key</strong></td>
+                <td>eyJhbGc... (ตัวยาว)</td>
+            </tr>
+            <tr>
+                <td><strong>LINE Channel ID</strong></td>
+                <td>ตัวเลข 10+ หลัก</td>
+            </tr>
+            <tr>
+                <td><strong>LINE Channel Secret</strong></td>
+                <td>ตัวอักษร ยาว ๆ</td>
+            </tr>
+            <tr>
+                <td><strong>LINE Channel Access Token</strong></td>
+                <td>ตัวยาวมาก ๆ</td>
+            </tr>
+            <tr>
+                <td><strong>EasySlip API Key</strong></td>
+                <td>ถ้ามีบัญชี EasySlip</td>
+            </tr>
+            <tr>
+                <td><strong>Vercel Blob Token</strong></td>
+                <td>ถ้าใช้ Vercel Blob ฟรี</td>
+            </tr>
+        </table>
+
+        <div class="box warning">
+            <strong>⚠️ สำคัญมาก:</strong> ค่าเหล่านี้ห้ามแชร์กับใคร โดยเฉพาะ Service Role Key!
+        </div>
+
+        <h2>หมวด 2: Receiver (ข้อมูลรับเงิน)</h2>
+        <p>
+            ตั้งค่าบัญชีที่ระบบจะใช้ตรวจสลิป
+        </p>
+
+        <table>
+            <tr>
+                <th>ช่อง</th>
+                <th>ใช้ทำอะไร</th>
+            </tr>
+            <tr>
+                <td><strong>PromptPay ID</strong></td>
+                <td>สร้าง QR ธนาคาร (ประมาณ 13 หลัก)</td>
+            </tr>
+            <tr>
+                <td><strong>ชื่อบัญชี (ธนาคาร)</strong></td>
+                <td>ตรวจชื่อปลายทางจากสลิป</td>
+            </tr>
+            <tr>
+                <td><strong>เลขบัญชี (ธนาคาร)</strong></td>
+                <td>ตรวจเลขบัญชีปลายทาง</td>
+            </tr>
+            <tr>
+                <td><strong>เบอร์ TrueMoney</strong></td>
+                <td>เบอร์โทรศัพท์ที่ลงทะเบียน TrueMoney</td>
+            </tr>
+            <tr>
+                <td><strong>ชื่อบัญชี TrueMoney</strong></td>
+                <td>ชื่อปลายทาง TrueMoney</td>
+            </tr>
+        </table>
+
+        <h2>หมวด 3: LINE Rich Menu (เมนูปุ่ม LINE)</h2>
+        <p>
+            ปรับแต่งปุ่มเมนูที่จะปรากฏให้นักเรียน
+        </p>
+
+        <div class="box">
+            <strong>ℹ️ Rich Menu คือ:</strong> ปุ่ม 4-6 ปุ่มที่ปรากฏด้านล่างของแชท LINE ให้นักเรียนกดเพื่อทำสิ่งต่าง ๆ
+        </div>
+
+        <table>
+            <tr>
+                <th>ช่อง</th>
+                <th>ตัวอย่าง</th>
+            </tr>
+            <tr>
+                <td><strong>Register action label</strong></td>
+                <td>"ลงทะเบียน"</td>
+            </tr>
+            <tr>
+                <td><strong>Register action text</strong></td>
+                <td>"ลงทะเบียน"</td>
+            </tr>
+            <tr>
+                <td><strong>Pay action label</strong></td>
+                <td>"💳 ชำระเงิน"</td>
+            </tr>
+            <tr>
+                <td><strong>Pay action text</strong></td>
+                <td>"ชำระเงิน"</td>
+            </tr>
+            <tr>
+                <td><strong>Status action</strong></td>
+                <td>"📊 สถานะ"</td>
+            </tr>
+            <tr>
+                <td><strong>History action</strong></td>
+                <td>"📜 ประวัติ"</td>
+            </tr>
+        </table>
+
+        <h3>วิธีตั้งค่า Rich Menu:</h3>
+        <ol>
+            <li>ปรับแต่งข้อมูล Rich Menu ตามที่ต้องการ</li>
+            <li>คลิก "บันทึก"</li>
+            <li>รัน endpoint setup: เข้าไปที่ <code>/api/line/rich-menu/setup</code> ในเบราว์เซอร์</li>
+            <li>ปิด LINE แล้วเปิดใหม่เพื่อให้ rich menu อัปเดต</li>
+        </ol>
+
+        <h2>หมวด 4: LINE Messages (ข้อความ LINE)</h2>
+        <p>
+            ปรับแต่งข้อความที่บอทจะส่งให้นักเรียน สามารถใช้ตัวแปร เช่น:
+        </p>
+
+        <ul>
+            <li><code>{{studentName}}</code> - ชื่อนักเรียน</li>
+            <li><code>{{studentNumber}}</code> - เลขที่นักเรียน</li>
+            <li><code>{{reason}}</code> - เหตุผล (ใช้สำหรับ reject)</li>
+        </ul>
+
+        <h3>ข้อความที่สามารถปรับแต่งได้:</h3>
+        <ul>
+            <li>ลงทะเบียนไว้แล้ว</li>
+            <li>ลงทะเบียนสำเร็จ</li>
+            <li>ไม่พบรายการชำระ</li>
+            <li>สลิปผ่านการอนุมัติ</li>
+            <li>สลิปถูกปฏิเสธ</li>
+            <li>รับสลิปแล้วรอการตรวจสอบ</li>
+        </ul>
+
+        <!-- Chapter 8 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 8: QR Code และวิธีชำระเงิน</h1>
+
+        <h2>ประเภทการชำระเงิน</h2>
+        <p>
+            ระบบรองรับ 3 วิธีหลัก:
+        </p>
+
+        <table>
+            <tr>
+                <th>วิธี</th>
+                <th>QR Code</th>
+                <th>ความสะดวก</th>
+            </tr>
+            <tr>
+                <td><strong>ธนาคาร (PromptPay)</strong></td>
+                <td>✅ มี QR แม่แบบ</td>
+                <td>สูง - แสกนแล้วชำระได้เลย</td>
+            </tr>
+            <tr>
+                <td><strong>TrueMoney</strong></td>
+                <td>✅ มี QR ล็อกจำนวนเงิน</td>
+                <td>สูง - แสกนแล้วเสร็จ</td>
+            </tr>
+            <tr>
+                <td><strong>เงินสด</strong></td>
+                <td>❌ ไม่มี QR</td>
+                <td>ต่ำ - นักเรียนมายืมเงินสด</td>
+            </tr>
+        </table>
+
+        <h2>วิธีตั้งค่า QR ธนาคาร</h2>
+        <ol>
+            <li>เข้าหน้า Settings</li>
+            <li>ไปหมวด "Receiver"</li>
+            <li>ใส่ "PromptPay ID" (ประมาณ 13 หลัก)</li>
+            <li>ใส่ "ชื่อบัญชี" และ "เลขบัญชี"</li>
+            <li>คลิก "บันทึก"</li>
+        </ol>
+
+        <h2>วิธีตั้งค่า QR TrueMoney</h2>
+        <ol>
+            <li>เข้าหน้า Settings</li>
+            <li>ไปหมวด "Receiver"</li>
+            <li>ใส่ "เบอร์ TrueMoney"</li>
+            <li>ใส่ "ชื่อบัญชี TrueMoney"</li>
+            <li>ใส่ "TrueMoney QR Template" (ถ้ามี)</li>
+            <li>คลิก "บันทึก"</li>
+        </ol>
+
+        <h2>วิธี Generate QR ตอนใช้งาน</h2>
+        <ol>
+            <li>สร้างกำหนดการเก็บเงิน</li>
+            <li>ใน LINE ให้นักเรียน "หลาย" ปุ่ม "💳 ชำระเงิน"</li>
+            <li>เลือก "ธนาคาร" หรือ "TrueMoney"</li>
+            <li>ระบบจะ generate QR อัตโนมัติ</li>
+            <li>นักเรียนแสกนและชำระเงิน</li>
+        </ol>
+
+        <!-- Chapter 9 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 9: การตรวจสลิป (Slip Checking)</h1>
+
+        <p>
+            ระบบสามารถตรวจสลิปโดยอัตโนมัติได้ โดยใช้เทคโนโลยี OCR (อ่านข้อมูลจากรูป) 
+            และ EasySlip API เพื่อยืนยันการโอนเงิน
+        </p>
+
+        <h2>ขั้นตอนการตรวจสลิป</h2>
+        <ol>
+            <li><strong>นักเรียนส่งสลิป:</strong> ส่งรูปสลิปผ่าน LINE</li>
+            <li><strong>ระบบบันทึกรูป:</strong> บันทึกลง Supabase Storage</li>
+            <li><strong>ตรวจด้วย EasySlip:</strong> ถ้ามี API key เรียก EasySlip ตรวจสอบ</li>
+            <li><strong>ตรวจด้วย OCR:</strong> ถ้า EasySlip ใช้ไม่ได้ ให้ OCR ในแอป</li>
+            <li><strong>เปรียบเทียบข้อมูล:</strong> ตรวจยอดเงิน, บัญชีปลายทาง, ชื่อปลายทาง</li>
+            <li><strong>ผลการตรวจ:</strong> Auto approve, Auto reject, หรือรอการตรวจของเหรัญญิก</li>
+        </ol>
+
+        <h2>ประเภทของผลการตรวจ</h2>
+        <table>
+            <tr>
+                <th>ผล</th>
+                <th>หมายความ</th>
+                <th>ที่ต้องทำ</th>
+            </tr>
+            <tr>
+                <td><strong>✅ Auto Approve</strong></td>
+                <td>สลิปถูกต้องหมด อนุมัติอัตโนมัติ</td>
+                <td>ไม่ต้องทำอะไร</td>
+            </tr>
+            <tr>
+                <td><strong>⏳ Pending Review</strong></td>
+                <td>ข้อมูลไม่ชัดแจ้ง รอการอนุมัติของเหรัญญิก</td>
+                <td>เข้าหน้า Transactions ตรวจและอนุมัติเอง</td>
+            </tr>
+            <tr>
+                <td><strong>❌ Auto Reject</strong></td>
+                <td>รูปไม่ใช่สลิป หรือข้อมูลไม่ตรง</td>
+                <td>เบิกสลิปใหม่ให้นักเรียน</td>
+            </tr>
+        </table>
+
+        <h2>วิธีตั้งค่า Slip Checker</h2>
+        <div class="step">
+            <strong>1. ถ้ามี EasySlip API Key</strong>
+            <ul style="margin-top: 10px;">
+                <li>เข้าหน้า Settings</li>
+                <li>ใส่ "EasySlip API Key"</li>
+                <li>เปิด "EasySlip check duplicate" (ถ้าต้องการ)</li>
+                <li>คลิก "บันทึก"</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <strong>2. ตั้งค่า Slip Bucket</strong>
+            <ul style="margin-top: 10px;">
+                <li>ใส่ชื่อ bucket Supabase ที่เก็บรูปสลิป (ปกติคือ "slips")</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <strong>3. ตั้งค่า OCR</strong>
+            <ul style="margin-top: 10px;">
+                <li>เลือก OCR Lang: "eng+tha" (อ่านภาษาอังกฤษและไทย)</li>
+                <li>ตั้ง OCR Max Variants: 3 (ลองแก้รูปได้ 3 แบบ)</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <strong>4. ตั้งค่า Auto Reject</strong>
+            <ul style="margin-top: 10px;">
+                <li>เปิด "Auto reject invalid image" ถ้าต้องการปฏิเสธรูปที่ไม่ใช่สลิป</li>
+                <li>เปิด "TrueMoney auto reject receiver mismatch" ถ้าต้องการปฏิเสธ TrueMoney ที่ปลายทางไม่ตรง</li>
+            </ul>
+        </div>
+
+        <h2>วิธีตรวจและอนุมัติสลิป</h2>
+        <ol>
+            <li>เข้าหน้า "💳 Transactions"</li>
+            <li>ค้นหาสลิปที่มีสถานะ "Pending Review"</li>
+            <li>คลิกสลิป เปิด Modal รายละเอียด</li>
+            <li>ตรวจข้อมูล:
+                <ul>
+                    <li>ยอดเงินตรงกันหรือไม่</li>
+                    <li>บัญชีปลายทางตรงกันหรือไม่</li>
+                    <li>ชื่อปลายทางตรงกันหรือไม่</li>
+                    <li>นักเรียนคนนี้มีค้างชำระหรือไม่</li>
+                </ul>
+            </li>
+            <li>คลิก "✅ Approve" หรือ "❌ Reject" ตามการตัดสินใจ</li>
+            <li>ระบบจะอัปเดตสถานะและส่งข้อความ LINE ให้นักเรียน</li>
+        </ol>
+
+        <!-- Chapter 10 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 10: คำถามที่พบบ่อย (FAQ)</h1>
+
+        <h2>🤔 คำถามทั่วไป</h2>
+
+        <div class="box">
+            <strong>Q: ระบบนี้ใช้เงิน/ค่าบริการไหม?</strong><br>
+            A: ไม่เลย! ทั้ง Next.js, Supabase Free Tier, LINE Messaging API ใช้ได้ฟรี ต่อให้ใช้งาน 1 ปี
+        </div>
+
+        <div class="box">
+            <strong>Q: เหรัญญิกคนใหม่เข้ามาแล้ว ต้องตั้งค่าทั้งหมดใหม่หรือ?</strong><br>
+            A: ไม่ต้อง! ใช้ฟีเจอร์ "Export Settings" ลงแล้ว "Import Settings" ให้เหรัญญิกคนใหม่
+        </div>
+
+        <div class="box">
+            <strong>Q: ลืมรหัส Supabase ทำไง?</strong><br>
+            A: เข้าไป Supabase Project Settings → Reset Database Password
+        </div>
+
+        <div class="box">
+            <strong>Q: LINE Bot ไม่ตอบ ต้องทำไง?</strong><br>
+            A: ตรวจ:
+            <ol style="margin-top: 10px;">
+                <li>Webhook URL ถูกหรือไม่</li>
+                <li>LINE Channel Secret ตรงหรือไม่</li>
+                <li>Use webhook เปิด/ปิดอยู่</li>
+                <li>Access Token หมดอายุหรือไม่</li>
+            </ol>
+        </div>
+
+        <h2>🔧 คำถามทางเทคนิค</h2>
+
+        <div class="box">
+            <strong>Q: ต้อง deploy บน Vercel หรือปล่อยให้ run บนเครื่อง local?</strong><br>
+            A: ควร deploy บน Vercel (ฟรี) เพื่อให้ LINE Bot เข้าถึงได้ 24 ชั่วโมง ถ้า local ต้องเปิดเครื่องตลอด
+        </div>
+
+        <div class="box">
+            <strong>Q: ต้องแก้โค้ดเยอะหรือ?</strong><br>
+            A: ไม่เลย! ทั้งหมดตั้งค่าได้จากหน้า Settings ไม่ต้องแก้โค้ด
+        </div>
+
+        <div class="box">
+            <strong>Q: ข้อมูลถูก Delete หรือ Corrupt แล้ว ต้องทำไง?</strong><br>
+            A: ถ้าเสียหายเล็กน้อย ให้แก้ไขใน Supabase Dashboard → Table Editor → ค้นหาแถวที่ผิดแล้วแก้<br>
+            ถ้าเสียหายมาก ต้องใช้ Supabase Backup (ถ้ามี)
+        </div>
+
+        <h2>💳 คำถามเกี่ยวกับการชำระเงิน</h2>
+
+        <div class="box">
+            <strong>Q: QR ไม่ generate?</strong><br>
+            A: ตรวจ:
+            <ol style="margin-top: 10px;">
+                <li>ใส่ PromptPay ID แล้วหรือ</li>
+                <li>Format PromptPay ID ถูกหรือไม่ (13 หลัก หรือ 11 ที่เครื่องหมาย)</li>
+                <li>บันทึกค่า Settings แล้วหรือ</li>
+            </ol>
+        </div>
+
+        <div class="box">
+            <strong>Q: สลิป Reject ทุกอัน ทำไง?</strong><br>
+            A: ปัญหาอาจ:
+            <ol style="margin-top: 10px;">
+                <li>บัญชีปลายทางไม่ตรง (ตรวจ Settings)</li>
+                <li>รูปสลิปไม่ชัดพอ (ให้นักเรียนถ่ายใหม่)</li>
+                <li>Auto Reject เปิดเกินไป (ปรับ Settings)</li>
+            </ol>
+        </div>
+
+        <h2>📱 คำถามเกี่ยวกับ LINE</h2>
+
+        <div class="box">
+            <strong>Q: Rich Menu ไม่แสดง?</strong><br>
+            A: หลังแก้ Settings ต้อง:
+            <ol style="margin-top: 10px;">
+                <li>บันทึก Settings ก่อน</li>
+                <li>เข้า /api/line/rich-menu/setup</li>
+                <li>ปิด LINE แล้วเปิดใหม่</li>
+            </ol>
+        </div>
+
+        <div class="box">
+            <strong>Q: นักเรียนลงทะเบียน LINE แล้วแต่เว็บไม่เห็นชื่อ?</strong><br>
+            A: ตรวจ:
+            <ol style="margin-top: 10px;">
+                <li>ลงทะเบียนถูกต้องแล้ว?</li>
+                <li>เลขที่นักเรียนในระบบตรงกับที่พิมพ์ใน LINE หรือไม่</li>
+                <li>ตรวจ Table "students" ว่ามี line_user_id หรือไม่</li>
+            </ol>
+        </div>
+
+        <div class="box">
+            <strong>Q: ปุ่ม Rich Menu กดแล้วไม่ทำงาน?</strong><br>
+            A: ตรวจว่า "Pay action text" ใน Settings ตรงกับ text ที่ปุ่มส่ง หรือไม่
+        </div>
+
+        <!-- Chapter 11 -->
+        <div class="page-break"></div>
+        <h1>📖 บทที่ 11: การแก้ไขปัญหา (Troubleshooting)</h1>
+
+        <h2>⚠️ ข้อผิดพลาดทั่วไป</h2>
+
+        <h3>ปัญหา: "Connection refused" เมื่อเปิด http://localhost:3000</h3>
+        <div class="step">
+            <strong>สาเหตุ:</strong> npm run dev ยังไม่ได้รัน หรือ terminal ปิดไป
+        </div>
+        <div class="step">
+            <strong>แก้ไข:</strong>
+            <ol style="margin-top: 10px;">
+                <li>เปิด Terminal ใหม่</li>
+                <li>เข้าไปในโฟลเดอร์โครงการ</li>
+                <li>พิมพ์ <code>npm run dev</code></li>
+                <li>รอให้เห็น "Local: http://localhost:3000"</li>
+            </ol>
+        </div>
+
+        <h3>ปัญหา: "Cannot find module" เมื่อรัน npm run dev</h3>
+        <div class="step">
+            <strong>สาเหตุ:</strong> npm packages ยังไม่ติดตั้ง
+        </div>
+        <div class="step">
+            <strong>แก้ไข:</strong>
+            <pre>npm install</pre>
+        </div>
+
+        <h3>ปัญหา: "SUPABASE_URL is undefined"</h3>
+        <div class="step">
+            <strong>สาเหตุ:</strong> .env.local ไม่ได้บันทึกหรือค่าผิด
+        </div>
+        <div class="step">
+            <strong>แก้ไข:</strong>
+            <ol style="margin-top: 10px;">
+                <li>เปิดไฟล์ .env.local</li>
+                <li>ตรวจว่า SUPABASE_URL มีค่าหรือไม่</li>
+                <li>ตรวจว่า format ถูก (ต้องขึ้นต้นด้วย https://)</li>
+                <li>บันทึกไฟล์</li>
+                <li>รัน dev server ใหม่</li>
+            </ol>
+        </div>
+
+        <h3>ปัญหา: ข้อมูลว่างเปล่า หรือสลับอยู่</h3>
+        <div class="step">
+            <strong>สาเหตุ:</strong> Connection กับ Supabase มีปัญหา
+        </div>
+        <div class="step">
+            <strong>แก้ไข:</strong>
+            <ol style="margin-top: 10px;">
+                <li>ตรวจ Console (F12 → Console)</li>
+                <li>ดู error message</li>
+                <li>ถ้าเป็น "fetch failed" → ตรวจ Supabase URL และ Key</li>
+                <li>ถ้ายังไม่ได้ → รัน Migration ใหม่ใน Supabase</li>
+            </ol>
+        </div>
+
+        <h2>🚀 Deploy ปัญหา</h2>
+
+        <h3>ปัญหา: Deploy บน Vercel ล้มเหลว</h3>
+        <div class="step">
+            <strong>สาเหตุ:</strong> Environment variables ไม่ได้ตั้ง
+        </div>
+        <div class="step">
+            <strong>แก้ไข:</strong>
+            <ol style="margin-top: 10px;">
+                <li>เข้า Vercel Dashboard</li>
+                <li>ไปที่ Settings → Environment Variables</li>
+                <li>เพิ่มค่าให้ครบ:
+                    <ul>
+                        <li>SUPABASE_URL</li>
+                        <li>SUPABASE_SERVICE_ROLE_KEY</li>
+                        <li>LINE_CHANNEL_ID</li>
+                        <li>LINE_CHANNEL_SECRET</li>
+                        <li>LINE_CHANNEL_ACCESS_TOKEN</li>
+                    </ul>
+                </li>
+                <li>Redeploy</li>
+            </ol>
+        </div>
+
+        <h3>ปัญหา: Build time timeout</h3>
+        <div class="step">
+            <strong>สาเหตุ:</strong> Dependencies ติดตั้งช้า
+        </div>
+        <div class="step">
+            <strong>แก้ไข:</strong>
+            <ol style="margin-top: 10px;">
+                <li>ลบ node_modules บนเครื่อง</li>
+                <li>ลบ package-lock.json</li>
+                <li>รัน <code>npm install</code> ใหม่</li>
+                <li>Push ขึ้น Git ใหม่</li>
+                <li>Redeploy</li>
+            </ol>
+        </div>
+
+        <h2>📊 Supabase ปัญหา</h2>
+
+        <h3>ปัญหา: ไม่สามารถ Insert ข้อมูล</h3>
+        <div class="step">
+            <strong>สาเหตุ:</strong> RLS (Row Level Security) ไม่ได้ตั้ง หรือ Schema มีปัญหา
+        </div>
+        <div class="step">
+            <strong>แก้ไข:</strong>
+            <ol style="margin-top: 10px;">
+                <li>เข้า Supabase Dashboard</li>
+                <li>ไปที่ SQL Editor</li>
+                <li>รัน Migration ใหม่ (เริ่มจาก 001)</li>
+                <li>ลบข้อมูลเก่า (ถ้าต้องการ)</li>
+            </ol>
+        </div>
+
+        <h3>ปัญหา: Storage bucket ไม่พบ</h3>
+        <div class="step">
+            <strong>สาเหตุ:</strong> Bucket ยังไม่ได้สร้าง
+        </div>
+        <div class="step">
+            <strong>แก้ไข:</strong>
+            <ol style="margin-top: 10px;">
+                <li>เข้า Supabase Dashboard</li>
+                <li>ไปที่ Storage</li>
+                <li>คลิก "New Bucket"</li>
+                <li>ตั้งชื่อ "slips" (หรือตามโค้ด)</li>
+                <li>ตั้ง Public = checked</li>
+                <li>สร้าง</li>
+            </ol>
+        </div>
+
+        <!-- Closing -->
+        <div class="page-break"></div>
+        <h1>🎓 สรุปและข้อสำคัญ</h1>
+
+        <h2>ขั้นตอนส่วนสำคัญ (ตรวจสอบให้แน่นอน):</h2>
+        <ol style="font-size: 16px; line-height: 2;">
+            <li>✅ ติดตั้ง Node.js เวอร์ชัน 18 ขึ้นไป</li>
+            <li>✅ ติดตั้ง npm packages ด้วย <code>npm install</code></li>
+            <li>✅ สร้าง .env.local ด้วยค่า Supabase</li>
+            <li>✅ สร้าง Supabase Project และรัน Migration ทั้งหมด</li>
+            <li>✅ สร้าง LINE Messaging API Channel</li>
+            <li>✅ ตั้ค Webhook URL และเปิด Use webhook</li>
+            <li>✅ อัปเดต .env.local ด้วย LINE Credentials</li>
+            <li>✅ รัน <code>npm run dev</code> และเข้า http://localhost:3000</li>
+            <li>✅ เพิ่มนักเรียน และตั้ค Settings ตามความต้องการ</li>
+            <li>✅ ทดสอบ LINE Bot ด้วยการลงทะเบียน</li>
+            <li>✅ Deploy บน Vercel เพื่อให้ใช้งาน 24 ชั่วโมง</li>
+        </ol>
+
+        <h2>📞 ติดต่อและการสนับสนุน</h2>
+        <p>
+            หากพบปัญหาหรือมีคำถาม:
+        </p>
+        <ul>
+            <li>ดู README.md สำหรับข้อมูลโครงการ</li>
+            <li>ตรวจ Console (F12) ดู error message</li>
+            <li>ถามผู้พัฒนาหรือรุ่นพี่ที่พัฒนาระบบ</li>
+        </ul>
+
+        <h2>💡 คำแนะนำสำหรับใช้งานที่มีประสิทธิภาพ</h2>
+        <ul style="font-size: 16px; line-height: 2;">
+            <li>บันทึกค่า API Key ไว้ใน Password Manager</li>
+            <li>Export Settings เป็น Backup ทุกเดือน</li>
+            <li>ตรวจสอบยอดเงินใน Dashboard ทุกสัปดาห์</li>
+            <li>ส่งแจ้งเตือน LINE ให้นักเรียนเทียบเวลา</li>
+            <li>ตรวจสลิป Line ทุกวันเพื่อ Approve/Reject ทันท่วงที</li>
+            <li>ส่งเสริมให้นักเรียนใช้ QR Code เพื่อความสะดวก</li>
+        </ul>
+
+        <div class="box success">
+            <strong>✓ ยินดีด้วย!</strong> คุณพร้อมที่จะใช้งาน Classroom Finance 5.0 แล้ว! 🎉<br>
+            ขอให้ระบบช่วยลำบากงานการบริหารการเงินห้องเรียนให้สำเร็จลุล่วงไปด้วยความเรียบร้อย
+        </div>
+
+        <footer>
+            <p>Classroom Finance 5.0 - คู่มือการเริ่มต้นใช้งาน</p>
+            <p>เอกสารนี้อัปเดตครั้งล่าสุด: 24 พฤษภาคม 2566</p>
+            <p>© 2566 Classroom Finance Project. All rights reserved.</p>
+        </footer>
+
+    </div>
+</body>
+</html>
