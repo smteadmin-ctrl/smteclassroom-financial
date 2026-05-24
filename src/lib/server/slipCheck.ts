@@ -65,18 +65,26 @@ export async function analyzeSlipImage(
     remark: options.remark,
   });
   const easySlipData = easySlip.ok ? easySlip.data : undefined;
-  const shouldRunLocalOcr = !easySlip.ok || process.env.EASYSLIP_ALWAYS_RUN_LOCAL_OCR === "true";
-  const ocrText = shouldRunLocalOcr ? await readOcrText(data) : undefined;
+  const easySlipConfigured = easySlip.provider !== "none";
+  const allowLocalEvidence = !easySlipConfigured || process.env.EASYSLIP_ALWAYS_RUN_LOCAL_OCR === "true";
+  const shouldRunLocalOcr = allowLocalEvidence && (!easySlip.ok || process.env.EASYSLIP_ALWAYS_RUN_LOCAL_OCR === "true");
+  let ocrText = shouldRunLocalOcr ? await readOcrText(data) : undefined;
   const easySlipText = easySlipData ? stringifyEasySlipSearchText(easySlipData) : "";
   const easySlipAmount = easySlipData ? extractEasySlipAmount(easySlipData) : undefined;
   const easySlipPayload = easySlipData?.rawSlip?.payload;
   const easySlipTransactionId = easySlipData ? extractEasySlipTransactionId(easySlipData) : undefined;
   const qrAmount = qrPayload ? extractEmvAmount(qrPayload) : undefined;
-  const ocrAmount = extractAmountFromText(ocrText, expectedAmount);
-  const detectedAmount = typeof easySlipAmount === "number" ? easySlipAmount : typeof qrAmount === "number" ? qrAmount : ocrAmount;
-  const amountSource = typeof easySlipAmount === "number" ? "easyslip" : typeof qrAmount === "number" ? "qr" : typeof ocrAmount === "number" ? "ocr" : null;
+  let ocrAmount = extractAmountFromText(ocrText, expectedAmount);
+  if (allowLocalEvidence && !easySlip.ok && options.paymentMethod === "truemoney" && typeof ocrAmount !== "number") {
+    const fallbackOcrText = await readLegacyOcrText(data);
+    ocrText = mergeTextValues(ocrText, fallbackOcrText);
+    ocrAmount = extractAmountFromText(ocrText, expectedAmount);
+  }
+  const localAmount = typeof qrAmount === "number" ? qrAmount : ocrAmount;
+  const detectedAmount = typeof easySlipAmount === "number" ? easySlipAmount : allowLocalEvidence ? localAmount : undefined;
+  const amountSource = typeof easySlipAmount === "number" ? "easyslip" : allowLocalEvidence && typeof qrAmount === "number" ? "qr" : allowLocalEvidence && typeof ocrAmount === "number" ? "ocr" : null;
   const expectedReceiverName = options.expectedReceiverName?.trim();
-  const searchableText = [easySlipText, qrPayload, ocrText].filter(Boolean).join("\n");
+  const searchableText = [easySlipText, allowLocalEvidence ? qrPayload : undefined, ocrText].filter(Boolean).join("\n");
   const receiverSearchableText = options.paymentMethod === "truemoney"
     ? [easySlipText, ocrText].filter(Boolean).join("\n")
     : searchableText;
@@ -100,7 +108,7 @@ export async function analyzeSlipImage(
     ? expectedReceiverName
     : rawDetectedReceiverName;
   const slipTransactionId = easySlipTransactionId || (
-    qrPayload
+    allowLocalEvidence && qrPayload
       ? extractSlipTransactionId(qrPayload, transactionAccountExclusions, qrAmount)
       : undefined
   );
@@ -201,6 +209,89 @@ async function readOcrText(data: Buffer) {
     console.error("Failed to read slip OCR text", error);
     return undefined;
   }
+}
+
+async function readLegacyOcrText(data: Buffer) {
+  try {
+    const lang = process.env.SLIP_OCR_LANG || "eng+tha";
+    const langPath = ensureLocalTessdata(lang);
+    const metadata = await sharp(data).rotate().metadata();
+    const prepared = await sharp(data)
+      .rotate()
+      .resize({ width: 1800, withoutEnlargement: true })
+      .grayscale()
+      .normalize()
+      .sharpen()
+      .png()
+      .toBuffer();
+    const enlarged = await sharp(data)
+      .rotate()
+      .resize({ width: 2600, withoutEnlargement: false })
+      .grayscale()
+      .normalize()
+      .sharpen()
+      .png()
+      .toBuffer();
+    const topCrop = metadata.width && metadata.height
+      ? await sharp(data)
+        .rotate()
+        .extract({
+          left: 0,
+          top: 0,
+          width: metadata.width,
+          height: Math.max(1, Math.round(metadata.height * 0.28)),
+        })
+        .resize({ width: 2400 })
+        .grayscale()
+        .normalize()
+        .sharpen()
+        .png()
+        .toBuffer()
+      : undefined;
+    const middleCrop = metadata.width && metadata.height
+      ? await sharp(data)
+        .rotate()
+        .extract({
+          left: 0,
+          top: Math.max(0, Math.round(metadata.height * 0.12)),
+          width: metadata.width,
+          height: Math.max(1, Math.round(metadata.height * 0.5)),
+        })
+        .resize({ width: 2400 })
+        .grayscale()
+        .normalize()
+        .sharpen()
+        .png()
+        .toBuffer()
+      : undefined;
+    const buffers = [prepared, enlarged, topCrop, middleCrop].filter((buffer): buffer is Buffer => Boolean(buffer));
+    const results = await Promise.allSettled(
+      buffers.map((buffer) => recognize(buffer, lang, createOcrOptions(langPath)))
+    );
+
+    const text = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value.data.text.trim())
+      .filter(Boolean)
+      .join("\n");
+    if (text) return text;
+
+    const firstError = results.find((result) => result.status === "rejected");
+    if (firstError?.status === "rejected") {
+      console.error("Failed to read slip legacy OCR text", firstError.reason);
+    }
+    return undefined;
+  } catch (error) {
+    console.error("Failed to read slip legacy OCR text", error);
+    return undefined;
+  }
+}
+
+function mergeTextValues(...values: Array<string | undefined>) {
+  const cleanValues = values
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value));
+  return cleanValues.length > 0 ? cleanValues.join("\n") : undefined;
 }
 
 type OcrVariant = {
