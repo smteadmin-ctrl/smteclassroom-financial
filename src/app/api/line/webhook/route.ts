@@ -4,9 +4,8 @@ import { badRequest, ok, serverError } from "@/lib/api/response";
 import { createRecord, deleteRecord, listRecords, updateRecord, type Row } from "@/lib/supabase/server";
 import { mapLinePaymentRequest, mapSchedule, mapStudent, mapTransaction } from "@/lib/supabase/mappers";
 import { analyzeSlipImage } from "@/lib/server/slipCheck";
-import { deleteSlipImages, storeSlipImage } from "@/lib/server/slipStorage";
+import { storeSlipImage } from "@/lib/server/slipStorage";
 import { linkLineRichMenuByName } from "@/lib/server/line";
-import { approveLinePaymentRequest } from "@/lib/server/linePaymentReview";
 import { getRuntimeSettings, lineMessage } from "@/lib/server/appSettings";
 import { DEFAULT_PUBLIC_SETTINGS, type AppPublicSettings } from "@/lib/settings/schema";
 
@@ -532,30 +531,9 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
       existingSlipRows.some((row) => String(row.slip_transaction_id || "").toUpperCase() === slipCheck.slipTransactionId)
   );
   const duplicateSuspected = duplicateByQr || duplicateByHash || duplicateByTransaction || slipCheck.easySlipDuplicate;
-  const shouldAutoRejectInvalidImage =
-    settings.slipAutoRejectInvalidImage &&
-    !slipCheck.easySlipVerified &&
-    !slipCheck.qrReadable &&
-    !slipCheck.slipTransactionId &&
-    slipCheck.amountMatches !== true &&
-    slipCheck.receiverAccountMatches !== true &&
-    slipCheck.receiverNameMatches !== true;
-  const canAutoRejectReceiverMismatch =
-    activeRequest.method !== "truemoney" ||
-    settings.trueMoneyAutoRejectReceiverMismatch;
-  const autoRejectReasons = [
-    slipCheck.amountMatches === false ? "ยอดเงินในสลิปไม่ตรงกับยอดที่เลือกไว้" : "",
-    canAutoRejectReceiverMismatch && slipCheck.receiverAccountMatches === false ? "บัญชีปลายทางไม่ตรงกับที่ตั้งค่าไว้" : "",
-    canAutoRejectReceiverMismatch && slipCheck.receiverNameMatches === false ? "ชื่อบัญชีปลายทางไม่ตรงกับที่ตั้งค่าไว้" : "",
-    shouldAutoRejectInvalidImage ? "ระบบไม่พบ QR สลิป ยอดเงิน เลขธุรกรรม หรือข้อมูลบัญชีจากรูปที่ส่งมา" : "",
-  ].filter(Boolean);
-  const shouldAutoRejectSlip = autoRejectReasons.length > 0;
-  const autoRejectReason = autoRejectReasons.join(" • ");
-  // บังคับให้ผ่านการตรวจสอบและอนุมัติโดยเหรัญญิก (Treasurer approval) เสมอ
-  const canAutoApprove = false;
-  const slipStatus = shouldAutoRejectSlip
-    ? "rejected"
-    : duplicateSuspected
+  // Every uploaded slip must remain reviewable by the treasurer.
+  // The checker only labels risk signals for the web approval screen.
+  const slipStatus = duplicateSuspected
       ? "duplicate_suspected"
       : (!slipCheck.easySlipVerified && !slipCheck.qrReadable) || slipCheck.amountMatches === false
         ? "wrong_amount"
@@ -565,7 +543,7 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
     duplicateByHash,
     duplicateByTransaction,
     duplicateByProvider: slipCheck.easySlipDuplicate,
-    autoRejected: shouldAutoRejectSlip,
+    autoRejected: false,
     amountMatches: slipCheck.amountMatches,
     qrReadable: slipCheck.qrReadable,
     qrAmount: slipCheck.qrAmount,
@@ -579,7 +557,7 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
     provider: slipCheck.provider,
     providerMethod: slipCheck.easySlipMethod,
     providerError: slipCheck.easySlipError,
-    autoApproved: canAutoApprove,
+    autoApproved: false,
   });
 
   const proof = await storeSlipImage({
@@ -592,7 +570,7 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
     "line_payment_requests",
     activeRequest.id,
     {
-      status: shouldAutoRejectSlip ? "rejected" : "pending_slip_review",
+      status: "pending_slip_review",
       slip_status: slipStatus,
       slip_url: proof.url,
       slip_pathname: proof.pathname,
@@ -601,7 +579,7 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
       slip_transaction_id: slipCheck.slipTransactionId ?? null,
       slip_ocr_text: slipCheck.ocrText ?? null,
       slip_auto_check_result: autoCheckResult,
-      reject_reason: shouldAutoRejectSlip ? autoRejectReason : null,
+      reject_reason: null,
       reviewed_by: null,
       reviewed_at: null,
     },
@@ -621,35 +599,10 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
     ]
   );
 
-  if (canAutoApprove) {
-    await approveLinePaymentRequest({
-      requestId: activeRequest.id,
-      reviewerLineUserId: "system-auto-slip",
-      notifyStudent: false,
-    });
-    await replyLineText(event.replyToken, await lineMessage("slipAutoApproved"));
-    return;
-  }
-
-  if (shouldAutoRejectSlip) {
-    await replyLineText(event.replyToken, await lineMessage("slipAutoRejected", { reason: autoRejectReason }));
-    await cleanupAutoRejectedPaymentRequest(activeRequest.id, proof.pathname);
-    return;
-  }
-
   await replyLineText(event.replyToken, duplicateSuspected
     ? await lineMessage("slipDuplicateSuspected")
     : await lineMessage("slipPendingReview")
   );
-}
-
-async function cleanupAutoRejectedPaymentRequest(requestId: string, slipPathname: string | undefined) {
-  await deleteRecord("line_payment_requests", requestId);
-  if (!slipPathname) return;
-
-  await deleteSlipImages([slipPathname]).catch((error) => {
-    console.error("Failed to delete auto-rejected slip image", error);
-  });
 }
 
 async function cancelActivePayment(event: LineWebhookEvent) {
