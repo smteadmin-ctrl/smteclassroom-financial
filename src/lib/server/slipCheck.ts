@@ -77,6 +77,9 @@ export async function analyzeSlipImage(
   const amountSource = typeof easySlipAmount === "number" ? "easyslip" : typeof qrAmount === "number" ? "qr" : typeof ocrAmount === "number" ? "ocr" : null;
   const expectedReceiverName = options.expectedReceiverName?.trim();
   const searchableText = [easySlipText, qrPayload, ocrText].filter(Boolean).join("\n");
+  const receiverSearchableText = options.paymentMethod === "truemoney"
+    ? [easySlipText, ocrText].filter(Boolean).join("\n")
+    : searchableText;
   const rawDetectedReceiverName = extractEasySlipReceiverName(easySlipData) || extractReceiverNameFromText(ocrText, options.paymentMethod);
   const amountMatches =
     typeof easySlipData?.isAmountMatched === "boolean"
@@ -87,11 +90,11 @@ export async function analyzeSlipImage(
   const easySlipAccountMatched = easySlipData ? hasEasySlipMatchedAccount(easySlipData) : false;
   const receiverAccountMatches = easySlipAccountMatched
     ? true
-    : searchableText && expectedAccounts.length > 0
-      ? containsExpectedAccount(searchableText, expectedAccounts)
+    : receiverSearchableText && expectedAccounts.length > 0
+      ? containsExpectedAccount(receiverSearchableText, expectedAccounts)
       : null;
-  const receiverNameMatches = searchableText && expectedReceiverName
-    ? containsExpectedName([searchableText, rawDetectedReceiverName].filter(Boolean).join("\n"), expectedReceiverName)
+  const receiverNameMatches = receiverSearchableText && expectedReceiverName
+    ? containsExpectedName([receiverSearchableText, rawDetectedReceiverName].filter(Boolean).join("\n"), expectedReceiverName)
     : null;
   const detectedReceiverName = receiverNameMatches === true && expectedReceiverName
     ? expectedReceiverName
