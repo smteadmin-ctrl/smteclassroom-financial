@@ -7,9 +7,7 @@ import { analyzeSlipImage } from "@/lib/server/slipCheck";
 import { storeSlipImage } from "@/lib/server/slipStorage";
 import { linkLineRichMenuByName } from "@/lib/server/line";
 import { getRuntimeSettings, lineMessage } from "@/lib/server/appSettings";
-import { DEFAULT_PUBLIC_SETTINGS, type AppPublicSettings } from "@/lib/settings/schema";
-
-const DEFAULT_SETTINGS = DEFAULT_PUBLIC_SETTINGS;
+import { type AppPublicSettings } from "@/lib/settings/schema";
 
 function crc16CcittFalse(data: string): string {
   let crc = 0xFFFF;
@@ -450,9 +448,15 @@ async function handleMethodSelection(event: LineWebhookEvent, requestId: string,
 
   await updateRecord<Row>("line_payment_requests", request.id, { method, status: "awaiting_slip" }, ["method", "status"]);
   const settings = await getRuntimeSettings();
+  const promptPayId = getBankPromptPayId(settings);
+  if (method === "kplus" && !promptPayId) {
+    await replyLineText(event.replyToken, "ยังไม่ได้ตั้งค่า PromptPay สำหรับรับโอนธนาคาร กรุณาติดต่อเหรัญญิกครับ");
+    return;
+  }
+
   const payload = method === "truemoney"
     ? generateTrueMoneyPayload(request.amount, settings)
-    : generatePayload(settings.promptPayId || DEFAULT_SETTINGS.promptPayId, { amount: request.amount });
+    : generatePayload(promptPayId, { amount: request.amount });
   const qrUrl = settings.quickChartQrUrlTemplate.replace("{{payload}}", encodeURIComponent(payload));
 
   await replyLineMessages(event.replyToken, [
@@ -463,6 +467,10 @@ async function handleMethodSelection(event: LineWebhookEvent, requestId: string,
       previewImageUrl: qrUrl,
     },
   ]);
+}
+
+function getBankPromptPayId(settings: AppPublicSettings) {
+  return settings.promptPayId.trim() || settings.bankReceiverPromptPay.trim();
 }
 
 function createCashPaymentBubble(amount: number, note: string) {
@@ -505,7 +513,7 @@ async function handleSlipImage(event: LineWebhookEvent, messageId: string) {
     expectedReceiverAccounts,
     expectedReceiverName,
     paymentMethod: activeRequest.method,
-    transactionAccountExclusions: [settings.promptPayId || DEFAULT_SETTINGS.promptPayId],
+    transactionAccountExclusions: [getBankPromptPayId(settings)].filter(Boolean),
     contentType: image.contentType,
     remark: `line-payment-request:${activeRequest.id}`,
   });
@@ -1189,7 +1197,7 @@ function getExpectedSlipReceiverAccounts(method: string | undefined, settings: A
       settings.trueMoneyReceiverPhone,
     ].flatMap((value) => splitEnvList(value))
     : [
-      settings.promptPayId || DEFAULT_SETTINGS.promptPayId,
+      getBankPromptPayId(settings),
       settings.bankReceiverAccount,
       settings.bankReceiverPromptPay,
     ].flatMap((value) => splitEnvList(value));

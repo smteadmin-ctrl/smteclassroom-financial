@@ -177,7 +177,7 @@ export const DEFAULT_PUBLIC_SETTINGS: AppPublicSettings = {
   lineStatusAction: { label: "สถานะ", text: "เมนูสถานะ" },
   lineHistoryAction: { label: "ประวัติ", text: "เมนูประวัติ" },
   lineTotalAction: { label: "ยอดรวม", text: "เมนูยอดรวม" },
-  promptPayId: "004666006046829",
+  promptPayId: "",
   bankReceiverName: "",
   bankReceiverAccount: "",
   bankReceiverPromptPay: "",

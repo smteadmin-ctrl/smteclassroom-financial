@@ -243,7 +243,8 @@ export function SettingsPanel() {
               <SecretField label="LINE Channel Access Token" value={settings.lineChannelAccessToken} show={showSecrets} onToggle={() => setShowSecrets((value) => !value)} onChange={(value) => updateField("lineChannelAccessToken", value)} onReset={() => resetField("lineChannelAccessToken")} />
               <SecretField label="LINE Channel Secret" value={settings.lineChannelSecret} show={showSecrets} onToggle={() => setShowSecrets((value) => !value)} onChange={(value) => updateField("lineChannelSecret", value)} onReset={() => resetField("lineChannelSecret")} />
               <SecretField label="EasySlip API Key" value={settings.easySlipApiKey} show={showSecrets} onToggle={() => setShowSecrets((value) => !value)} onChange={(value) => updateField("easySlipApiKey", value)} onReset={() => resetField("easySlipApiKey")} />
-              <TextField label="PromptPay ID" value={settings.promptPayId} onChange={(value) => updateField("promptPayId", value)} onReset={() => resetField("promptPayId")} />
+              <TextField label="K PLUS PromptPay ID" value={settings.promptPayId} onChange={(value) => updateField("promptPayId", value)} onReset={() => resetField("promptPayId")} />
+              <TextField label="เบอร์ TrueMoney" value={settings.trueMoneyReceiverPhone} onChange={(value) => updateField("trueMoneyReceiverPhone", value)} onReset={() => resetField("trueMoneyReceiverPhone")} />
             </SettingsGrid>
           )}
 
@@ -271,10 +272,12 @@ export function SettingsPanel() {
 
           {activeSection === "payment" && (
             <SettingsGrid>
-              <TextField label="PromptPay ID" value={settings.promptPayId} onChange={(value) => updateField("promptPayId", value)} onReset={() => resetField("promptPayId")} />
-              <TextField label="ชื่อบัญชีรับโอนธนาคาร" value={settings.bankReceiverName} onChange={(value) => updateField("bankReceiverName", value)} onReset={() => resetField("bankReceiverName")} />
-              <TextField label="เลขบัญชีรับโอนธนาคาร" value={settings.bankReceiverAccount} onChange={(value) => updateField("bankReceiverAccount", value)} onReset={() => resetField("bankReceiverAccount")} />
-              <TextField label="PromptPay/เลขพร้อมเพย์เพิ่มเติม" value={settings.bankReceiverPromptPay} onChange={(value) => updateField("bankReceiverPromptPay", value)} onReset={() => resetField("bankReceiverPromptPay")} />
+              <InfoCard title="K PLUS / โอนธนาคาร" text="QR ของปุ่ม K PLUS จะใช้ PromptPay ID ด้านล่างเท่านั้น ถ้าไม่กรอก ระบบจะไม่ส่ง QR เพื่อกันไปผิดบัญชี" />
+              <TextField label="K PLUS PromptPay ID" value={settings.promptPayId} onChange={(value) => updateField("promptPayId", value)} onReset={() => resetField("promptPayId")} />
+              <TextField label="ชื่อบัญชีธนาคาร" value={settings.bankReceiverName} onChange={(value) => updateField("bankReceiverName", value)} onReset={() => resetField("bankReceiverName")} />
+              <TextField label="เลขบัญชีธนาคารสำหรับตรวจสลิป" value={settings.bankReceiverAccount} onChange={(value) => updateField("bankReceiverAccount", value)} onReset={() => resetField("bankReceiverAccount")} />
+              <TextField label="PromptPay เพิ่มเติมสำหรับตรวจสลิป" value={settings.bankReceiverPromptPay} onChange={(value) => updateField("bankReceiverPromptPay", value)} onReset={() => resetField("bankReceiverPromptPay")} />
+              <InfoCard title="TrueMoney Wallet" text="QR ของปุ่ม TrueMoney จะใช้เบอร์และ template ชุดนี้ แยกจาก K PLUS/PromptPay ธนาคาร" />
               <TextField label="ชื่อบัญชี TrueMoney" value={settings.trueMoneyReceiverName} onChange={(value) => updateField("trueMoneyReceiverName", value)} onReset={() => resetField("trueMoneyReceiverName")} />
               <TextField label="เบอร์ TrueMoney" value={settings.trueMoneyReceiverPhone} onChange={(value) => updateField("trueMoneyReceiverPhone", value)} onReset={() => resetField("trueMoneyReceiverPhone")} />
               <TextareaField label="TrueMoney QR Template Prefix" value={settings.trueMoneyTemplatePrefix} onChange={(value) => updateField("trueMoneyTemplatePrefix", value)} onReset={() => resetField("trueMoneyTemplatePrefix")} rows={4} wide />
